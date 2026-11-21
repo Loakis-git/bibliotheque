@@ -1,0 +1,2 @@
+# Un id de livre par ligne. Les livres étoilés sont tirés 3 fois plus souvent comme parents.
+# Exemple : n2-0002
