@@ -9,3 +9,4 @@ Une ligne par passage : `- date · action · id · titre`.
 - 2026-11-21 12:20 · assembler · n2-0004 · L'Atelier des fissures
 - 2026-11-21 12:24 · assembler · n2-0005 · Le Maître d'armes des îles
 - 2026-11-21 12:28 · assembler · n2-0006 · Mille victoires
+- 2026-11-21 20:35 · assembler · n2-0007 · Mille ans de répétitions
