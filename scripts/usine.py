@@ -2,7 +2,7 @@
 """L'usine de la Bibliothèque : gisements -> pièces brutes -> assemblages.
 
   python3 scripts/usine.py prochaine        tire au sort la prochaine brique
-  python3 scripts/usine.py build            valide l'usine et régénère docs/data.js
+  python3 scripts/usine.py build            valide l'usine et régénère docs/index.html
   python3 scripts/usine.py stats            état de l'usine
   python3 scripts/usine.py cherche "titre"  ce titre est-il déjà un gisement ?
 
@@ -24,7 +24,6 @@ import yaml
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TYPES = ["monde", "heros", "mecanique", "conflit", "ton"]
 OBJECTIF_GISEMENTS = 500
-STOCK_BAS = 12          # en dessous, l'usine réclame de l'extraction
 RESERVE_BASSE = 3       # en dessous, l'usine réclame de la prospection
 GENRES_REFERENCE = [
     "action", "aventure", "comédie", "cuisine", "drame", "fantastique", "fantasy",
@@ -90,20 +89,13 @@ def etoiles():
         return {l.strip() for l in f if l.strip() and not l.startswith("#")}
 
 
-def consommees(assemblages):
-    """Pièce (gisement, type) -> id de l'assemblage qui l'a consommée."""
-    c = {}
-    for aid, a in assemblages.items():
+def usages(assemblages):
+    """Pièce (gisement, type) -> liste des assemblages qui l'ont utilisée. Une pièce reste réutilisable."""
+    u = collections.defaultdict(list)
+    for aid, a in sorted(assemblages.items()):
         for t, g in (a.get("recette") or {}).items():
-            c[(g, t)] = aid
-    return c
-
-
-def stock(tas, assemblages):
-    """Les pièces brutes encore disponibles sur les tas : liste de (gisement, type)."""
-    c = consommees(assemblages)
-    return [(g, t) for g, x in sorted(tas.items()) for t in TYPES
-            if (x.get("pieces") or {}).get(t) and (g, t) not in c]
+            u[(g, t)].append(aid)
+    return u
 
 
 def prochain_id(assemblages):
@@ -143,38 +135,31 @@ def tirer_extraire(rng, gisements, tas):
 
 
 def tirer_assembler(rng, gisements, tas, assemblages, stars):
-    dispo = stock(tas, assemblages)
-    par_type = collections.defaultdict(list)
-    for g, t in dispo:
-        par_type[t].append(g)
+    extraits = sorted(tas)
+    if len(extraits) < 3:
+        return None
+    u = usages(assemblages)
+    existantes = {tuple(sorted((a.get("recette") or {}).items())) for a in assemblages.values()}
     for _ in range(100):
-        # Les types les plus abondants sur les tas sont tirés plus souvent : l'usine écoule ses stocks.
-        types_dispo = [t for t in TYPES if par_type[t]]
-        if len(types_dispo) < 3:
-            return None
-        types = []
-        restants = list(types_dispo)
-        for _ in range(3):
-            t = rng.choices(restants, weights=[len(par_type[x]) for x in restants])[0]
-            types.append(t)
-            restants.remove(t)
+        types = rng.sample(TYPES, 3)
         recette, pris = {}, set()
         for t in types:
-            cands = [g for g in par_type[t] if g not in pris]
-            if not cands:
-                break
-            g = rng.choices(cands, weights=[3 if g in stars else 1 for g in cands])[0]
+            cands = [g for g in extraits if g not in pris]
+            # Les pièces peu utilisées et les gisements étoilés sont tirés plus souvent.
+            poids = [(3.0 if g in stars else 1.0) / (1 + len(u[(g, t)])) for g in cands]
+            g = rng.choices(cands, weights=poids)[0]
             recette[t] = g
             pris.add(g)
-        if len(recette) == 3:
-            recette = {t: recette[t] for t in TYPES if t in recette}
+        recette = {t: recette[t] for t in TYPES if t in recette}
+        if tuple(sorted(recette.items())) not in existantes:
+            aid = prochain_id(assemblages)
             return {
                 "action": "assembler",
-                "id": prochain_id(assemblages),
+                "id": aid,
                 "recette": recette,
                 "pieces": {t: tas[g]["pieces"][t] for t, g in recette.items()},
                 "origine": {t: gisements.get(g, {}).get("titre", g) for t, g in recette.items()},
-                "fichier_a_creer": f"assemblages/{prochain_id(assemblages)}.md",
+                "fichier_a_creer": f"assemblages/{aid}.md",
             }
     return None
 
@@ -185,14 +170,14 @@ def cmd_prochaine():
     gisements, tas, assemblages = charger()
     stars = etoiles()
     vierges = [g for g in gisements if g not in tas]
-    n_stock = len(stock(tas, assemblages))
 
     actions = []
     if len(gisements) < OBJECTIF_GISEMENTS:
         actions.append(("prospecter", 3.0 if len(vierges) < RESERVE_BASSE else 1.0))
     if vierges:
-        actions.append(("extraire", 3.0 if n_stock < STOCK_BAS else 1.0))
-    actions.append(("assembler", 2.0))
+        actions.append(("extraire", 2.0 if len(vierges) > RESERVE_BASSE else 1.0))
+    if len(tas) >= 3:
+        actions.append(("assembler", 2.0))
 
     resultat = None
     while actions and resultat is None:
@@ -240,7 +225,6 @@ def valider(gisements, tas, assemblages):
             erreurs.append(f"{f} : types de pièce inconnus {sorted(set(p) - set(TYPES))}")
         if not t.get("extrait"):
             erreurs.append(f"{f} : champ `extrait` manquant")
-    deja = {}
     for aid, a in assemblages.items():
         f = a["fichier"]
         if a.get("id") != aid:
@@ -250,7 +234,7 @@ def valider(gisements, tas, assemblages):
                 erreurs.append(f"{f} : champ `{champ}` manquant")
         r = a.get("recette") or {}
         if len(r) != 3:
-            erreurs.append(f"{f} : la recette doit consommer exactement 3 pièces")
+            erreurs.append(f"{f} : la recette doit utiliser exactement 3 pièces")
         if len(set(r.values())) != len(r):
             erreurs.append(f"{f} : les 3 pièces doivent venir de 3 gisements différents")
         for t, g in r.items():
@@ -258,9 +242,6 @@ def valider(gisements, tas, assemblages):
                 erreurs.append(f"{f} : type de pièce inconnu `{t}`")
             elif g not in tas:
                 erreurs.append(f"{f} : la pièce `{t}` de `{g}` n'a jamais été extraite")
-            elif (g, t) in deja:
-                erreurs.append(f"{f} : la pièce `{t}` de `{g}` a déjà été consommée par {deja[(g, t)]}")
-            deja[(g, t)] = aid
         if len(a.get("texte", "")) < 300:
             erreurs.append(f"{f} : pitch trop court")
     return erreurs, avert
@@ -278,7 +259,7 @@ def cmd_build():
             print("ERREUR :", x)
         sys.exit(1)
 
-    conso = consommees(assemblages)
+    u = usages(assemblages)
     evenements = []
     for gid, g in gisements.items():
         evenements.append((g["ajoute"], 0, "gisement", gid))
@@ -300,26 +281,23 @@ def cmd_build():
         "evenements": [{"type": e[2], "id": e[3], "date": e[0]} for e in evenements],
         "gisements": [propre(g) | {"ordre": ordre[("gisement", gid)]} for gid, g in sorted(gisements.items())],
         "tas": [propre(t) | {"ordre": ordre[("extraction", tid)],
-                             "consommees": {ty: conso.get((tid, ty)) for ty in TYPES}}
+                             "utilisations": {ty: u.get((tid, ty), []) for ty in TYPES}}
                 for tid, t in sorted(tas.items())],
         "assemblages": [propre(x) | {"ordre": ordre[("assemblage", aid)]} for aid, x in sorted(assemblages.items())],
     }
-    os.makedirs(os.path.join(ROOT, "docs"), exist_ok=True)
-    with open(os.path.join(ROOT, "docs", "data.js"), "w", encoding="utf-8") as f:
-        f.write("window.USINE = ")
-        json.dump(data, f, ensure_ascii=False, indent=1, default=str)
-        f.write(";\n")
-    print("OK : docs/data.js régénéré.")
+    with open(os.path.join(ROOT, "docs", "modele.html"), encoding="utf-8") as f:
+        modele = f.read()
+    donnees = json.dumps(data, ensure_ascii=False, default=str).replace("</", "<\\/")
+    with open(os.path.join(ROOT, "docs", "index.html"), "w", encoding="utf-8") as f:
+        f.write(modele.replace("/*DONNEES*/null", donnees))
+    print("OK : docs/index.html régénéré (données intégrées).")
     cmd_stats((gisements, tas, assemblages))
 
 
 def cmd_stats(etat=None):
     gisements, tas, assemblages = etat or charger()
-    s = stock(tas, assemblages)
-    par_type = collections.Counter(t for _, t in s)
     print(f"  gisements    : {len(gisements)} / {OBJECTIF_GISEMENTS}  ({len(gisements) - len(tas)} encore vierges)")
-    print(f"  pièces brutes: {len(tas) * len(TYPES)} extraites, {len(s)} sur les tas  "
-          + "  ".join(f"{t}={par_type[t]}" for t in TYPES))
+    print(f"  pièces brutes: {len(tas) * len(TYPES)} extraites de {len(tas)} gisements")
     print(f"  assemblages  : {len(assemblages)}")
 
 

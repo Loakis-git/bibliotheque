@@ -3,91 +3,86 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>La Bibliothèque — l'usine</title>
+<title>La Bibliothèque</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --sol: #1a1a19; --dalle: #232321; --panneau: #2e2d2b; --bord-sombre: #121211;
-    --texte: #e8e3d8; --doux: #aaa397; --pale: #6f6a61; --orange: #f2a33a;
-    --monde: #8fa6bd; --heros: #d07a3e; --mecanique: #5a5a5a; --conflit: #b8a37c; --ton: #7dbd4c;
-    --ui: "Titillium Web", system-ui, sans-serif; --lecture: "Source Serif 4", Georgia, serif;
+    --nuit: #17120e; --mur: #211a14; --bois: #5b3c25; --bois-sombre: #3a2616;
+    --papier: #efe4cf; --encre: #e9dcc3; --encre-douce: #b5a487; --encre-pale: #7d6f5a; --or: #d6a546;
+    --monde: #7f9bb8; --heros: #c9733b; --mecanique: #8c8c86; --conflit: #b9a27a; --ton: #79b04a;
+    --serif: "Cormorant Garamond", Georgia, serif; --sans: Inter, system-ui, sans-serif;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--sol); color: var(--texte); font-family: var(--ui); font-size: 15px; line-height: 1.5;
-    background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
-    background-size: 32px 32px; }
-  header { max-width: 1440px; margin: 0 auto; padding: 32px 28px 16px; }
-  h1 { font-size: 40px; font-weight: 700; margin: 0; letter-spacing: .01em; line-height: 1.1; }
-  h1 small { font-size: 16px; font-weight: 400; color: var(--doux); margin-left: 10px; }
-  .barre { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; margin-top: 18px; }
-  .compteur { font-size: 14px; color: var(--doux); } .compteur b { color: var(--texte); font-size: 18px; font-weight: 600; margin-right: 4px; }
-  .temps { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 280px; color: var(--doux); font-size: 13px; }
-  .temps input { flex: 1; accent-color: var(--orange); }
-  button { font: 600 13px var(--ui); color: var(--texte); background: #3c3b38; border: 1px solid var(--bord-sombre); border-radius: 3px;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.12); padding: 5px 14px; cursor: pointer; }
-  button:hover { background: var(--orange); color: #1a1a19; }
-  main { max-width: 1440px; margin: 0 auto; padding: 0 28px 48px; display: grid; grid-template-columns: minmax(0, 1fr) 390px; gap: 22px; align-items: start; }
-  @media (max-width: 980px) { main { grid-template-columns: 1fr; padding: 0 14px 40px; } header { padding: 24px 14px 12px; } }
-  .zone { background: var(--panneau); border: 1px solid var(--bord-sombre); box-shadow: inset 0 1px 0 rgba(255,255,255,.07); border-radius: 4px; padding: 14px 16px 16px; }
-  .zone h2 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; margin: 0 0 4px; display: flex; justify-content: space-between; gap: 12px; }
-  .zone h2 span { color: var(--doux); font-weight: 400; letter-spacing: .04em; text-transform: none; }
-  .zone .aide { color: var(--pale); font-size: 13px; margin: 0 0 12px; }
-  .convoyeur { height: 26px; margin: 0 40px; position: relative; display: flex; align-items: center; justify-content: center;
-    background: repeating-linear-gradient(90deg, #3a3326 0 8px, #2a251c 8px 16px); border-left: 4px solid #575044; border-right: 4px solid #575044; }
-  .convoyeur span { background: var(--sol); padding: 0 10px; font-size: 12px; color: var(--doux); text-transform: uppercase; letter-spacing: .12em; position: relative; }
-  @media (prefers-reduced-motion: no-preference) { .convoyeur { animation: tapis 1.2s linear infinite; } }
-  @keyframes tapis { to { background-position: 16px 0; } }
-  .gisements { display: grid; grid-template-columns: repeat(auto-fill, minmax(42px, 1fr)); gap: 4px; }
-  .gis { aspect-ratio: 1; border-radius: 3px; cursor: pointer; position: relative; border: 1px solid rgba(0,0,0,.5);
-    background-color: var(--c); transition: transform .12s, opacity .2s;
-    background-image: radial-gradient(circle at 25% 30%, rgba(255,255,255,.55) 0 2.5px, transparent 3px), radial-gradient(circle at 70% 60%, rgba(255,255,255,.45) 0 3px, transparent 3.5px),
-      radial-gradient(circle at 40% 78%, rgba(255,255,255,.35) 0 2px, transparent 2.5px), radial-gradient(circle at 78% 22%, rgba(0,0,0,.35) 0 3px, transparent 3.5px); }
-  .gis.extrait { background-color: #2a2826; background-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,.45) 0 34%, transparent 36%); border-style: dashed; border-color: #4a4640; }
-  .gis:hover { transform: scale(1.12); z-index: 2; }
-  .tas { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
-  @media (max-width: 640px) { .tas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  .pile { background: var(--dalle); border: 1px solid var(--bord-sombre); border-radius: 3px; padding: 10px; min-height: 140px; display: flex; flex-direction: column; }
-  .pile h3 { margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; display: flex; align-items: center; gap: 6px; }
-  .pile h3 i { width: 12px; height: 12px; border-radius: 2px; background: var(--c); display: inline-block; box-shadow: inset 0 0 0 1px rgba(0,0,0,.4); }
-  .pile .nb { font-size: 12px; color: var(--pale); margin-bottom: 8px; }
-  .items { display: flex; flex-wrap: wrap-reverse; align-content: flex-start; gap: 3px; margin-top: auto; }
-  .item { width: 14px; height: 14px; border-radius: 2px; background: var(--c); cursor: pointer; transition: transform .12s, opacity .2s;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset 0 -2px 0 rgba(0,0,0,.35); }
-  .item:hover { transform: scale(1.4); }
-  .produits { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
-  .produit { background: var(--dalle); border: 1px solid var(--bord-sombre); border-left: 3px solid var(--orange); border-radius: 3px; padding: 8px 10px; cursor: pointer; transition: opacity .2s, border-color .2s; }
-  .produit:hover { border-color: var(--orange); }
-  .produit .t { font-weight: 600; font-size: 14px; line-height: 1.25; }
-  .produit .id { font-size: 11px; color: var(--pale); }
-  .pips { display: flex; gap: 3px; margin-top: 6px; } .pips i { width: 12px; height: 12px; border-radius: 2px; background: var(--c); box-shadow: inset 0 -2px 0 rgba(0,0,0,.3); }
-  .attenue .gis:not(.lie), .attenue .item:not(.lie), .attenue .produit:not(.lie) { opacity: .15; }
-  .choisi { outline: 2px solid var(--orange); outline-offset: 2px; }
-  .vide-zone { color: var(--pale); font-size: 13px; font-style: italic; }
-  aside { position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow: auto; background: #ece5d6; color: #2a241c; border-radius: 4px; padding: 22px 24px 26px; border: 1px solid var(--bord-sombre); }
-  aside .badge { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #a05f12; }
-  aside h2 { font-family: var(--lecture); font-weight: 600; font-size: 28px; line-height: 1.1; margin: 4px 0 8px; }
-  aside h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; margin: 20px 0 8px; color: #6b5c48; }
-  aside .meta { font-size: 13px; color: #6b5c48; margin-bottom: 12px; }
-  aside .texte { font-family: var(--lecture); font-size: 15.5px; line-height: 1.6; }
+  body { margin: 0; background: var(--nuit); color: var(--encre); font-family: var(--sans); font-size: 15px; line-height: 1.6; }
+  header { padding: 40px 32px 20px; max-width: 1400px; margin: 0 auto; }
+  h1 { font-family: var(--serif); font-weight: 600; font-size: 52px; line-height: 1; margin: 0 0 8px; }
+  .sous-titre { color: var(--encre-douce); max-width: 760px; margin: 0; }
+  .barre { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; margin-top: 24px; }
+  .compteurs { display: flex; gap: 8px; flex-wrap: wrap; }
+  .compteur { border: 1px solid #3b2f24; border-radius: 999px; padding: 3px 12px; font-size: 13px; color: var(--encre-douce); }
+  .compteur b { color: var(--encre); font-weight: 500; }
+  .temps { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 260px; font-size: 13px; color: var(--encre-douce); }
+  .temps input { flex: 1; accent-color: var(--or); }
+  button { font: inherit; font-size: 13px; background: transparent; color: var(--encre); border: 1px solid #4a3b2d; border-radius: 6px; padding: 5px 12px; cursor: pointer; }
+  button:hover { border-color: var(--or); color: var(--or); }
+  main { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 28px; padding: 0 32px 60px; max-width: 1400px; margin: 0 auto; align-items: start; }
+  @media (max-width: 960px) { main { grid-template-columns: 1fr; padding: 0 16px 40px; } header { padding: 28px 16px 16px; } h1 { font-size: 40px; } }
+  #batiment { position: relative; background: var(--mur); border: 1px solid #33281e; border-radius: 4px; padding: 8px 0; }
+  #liens { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+  .etage { display: grid; grid-template-columns: 150px 1fr; border-bottom: 1px solid #2c231b; }
+  .etage:last-child { border-bottom: 0; }
+  @media (max-width: 600px) { .etage { grid-template-columns: 1fr; } .plaque { border-right: 0 !important; border-bottom: 1px solid #2c231b; } }
+  .plaque { padding: 18px 16px; border-right: 1px solid #2c231b; }
+  .plaque .num { font-family: var(--serif); font-size: 24px; font-weight: 600; line-height: 1.05; }
+  .plaque .nom { font-size: 12px; color: var(--encre-douce); text-transform: uppercase; letter-spacing: .08em; margin-top: 4px; }
+  .plaque .nb { font-size: 12px; color: var(--encre-pale); margin-top: 8px; }
+  .rayon { padding: 12px 14px 0; display: flex; flex-wrap: wrap; align-content: flex-start;
+    background: repeating-linear-gradient(to bottom, transparent 0 116px, var(--bois) 116px 124px, var(--bois-sombre) 124px 128px); min-height: 128px; }
+  .case { height: 116px; margin-bottom: 12px; display: flex; align-items: flex-end; }
+  .dos { position: relative; margin-right: 2px; border-radius: 2px 2px 0 0; cursor: pointer; overflow: hidden;
+    box-shadow: inset -2px 0 0 rgba(0,0,0,.25), inset 2px 0 0 rgba(255,255,255,.08); transition: transform .15s, opacity .2s; }
+  .dos:hover { transform: translateY(-6px); }
+  .dos span { position: absolute; inset: 6px 0; writing-mode: vertical-rl; transform: rotate(180deg); font-family: var(--serif);
+    font-size: 12.5px; font-weight: 600; color: rgba(255,250,240,.92); text-shadow: 0 1px 1px rgba(0,0,0,.4); white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis; display: block; text-align: left; line-height: 1; padding-top: 2px; }
+  .dos.oeuvre::before, .dos.oeuvre::after { content: ""; position: absolute; left: 0; right: 0; height: 3px; background: var(--or); opacity: .85; }
+  .dos.oeuvre::before { top: 10px; } .dos.oeuvre::after { bottom: 10px; }
+  .dos.vierge { opacity: .55; filter: saturate(.6); }
+  .dos.etoile span::after { content: " ★"; color: var(--or); }
+  .reserve { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+  .rangee { display: grid; grid-template-columns: 92px 1fr; gap: 10px; align-items: center; }
+  .rangee .lib { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--encre-douce); display: flex; align-items: center; gap: 6px; }
+  .rangee .lib i { width: 10px; height: 10px; border-radius: 2px; background: var(--c); }
+  .briques { display: flex; flex-wrap: wrap; gap: 3px; padding-bottom: 6px; border-bottom: 3px solid var(--bois-sombre); min-height: 24px; align-items: flex-end; }
+  .brique { width: 18px; height: 13px; border-radius: 2px; background: var(--c); cursor: pointer; transition: transform .12s, opacity .2s;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset 0 -3px 0 rgba(0,0,0,.3); }
+  .brique:hover { transform: translateY(-3px) scale(1.15); }
+  .attenue [data-k]:not(.lie) { opacity: .16; }
+  .choisi { outline: 2px solid var(--or); outline-offset: 2px; }
+  .dos.choisi { transform: translateY(-8px); }
+  .vide-rayon { color: var(--encre-pale); font-size: 13px; font-style: italic; padding: 40px 4px; }
+  aside { position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow: auto; background: var(--papier); color: #2b2118; border-radius: 4px; padding: 26px 26px 30px; }
+  aside h2 { font-family: var(--serif); font-size: 32px; line-height: 1.05; font-weight: 600; margin: 4px 0 10px; }
+  aside h3 { font-family: var(--serif); font-size: 21px; font-weight: 600; margin: 22px 0 6px; }
+  aside .meta { font-size: 13px; color: #6c5a45; margin-bottom: 14px; }
+  aside .badge { display: inline-block; font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: #8a6420; }
   aside .texte p { margin: 0 0 12px; } aside .texte ul { padding-left: 18px; margin: 0 0 12px; }
-  .ligne-piece { display: grid; grid-template-columns: 14px 1fr; gap: 10px; padding: 7px 0; border-top: 1px solid #d8ccb5; font-size: 14px; cursor: pointer; }
+  .ligne-piece { display: grid; grid-template-columns: 16px 1fr; gap: 10px; padding: 8px 0; border-top: 1px solid #d8c9ac; font-size: 14px; cursor: pointer; }
   .ligne-piece:first-of-type { border-top: 0; }
-  .ligne-piece i { width: 14px; height: 14px; border-radius: 2px; background: var(--c); margin-top: 3px; }
-  .ligne-piece small { display: block; color: #8a7a62; font-size: 12px; }
-  .ligne-piece.mangee { opacity: .6; }
-  .lien { color: #a05f12; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
-  .accueil { font-family: var(--lecture); font-style: italic; color: #5d5040; font-size: 17px; margin: 0; }
-  footer { text-align: center; color: var(--pale); font-size: 12px; padding-bottom: 28px; }
+  .ligne-piece i { width: 16px; height: 12px; border-radius: 2px; background: var(--c); margin-top: 5px; }
+  .ligne-piece small { display: block; color: #85714f; font-size: 12px; }
+  .lien { color: #8a6420; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+  .vide { color: #6c5a45; font-family: var(--serif); font-style: italic; font-size: 19px; line-height: 1.45; margin: 0; }
+  footer { text-align: center; color: var(--encre-pale); font-size: 12px; padding-bottom: 30px; }
 </style>
 </head>
 <body>
 <header>
-  <h1>La Bibliothèque <small>usine à œuvres</small></h1>
+  <h1>La Bibliothèque</h1>
+  <p class="sous-titre">Au rez-de-chaussée, de vrais mangas. Chacun est extrait en cinq pièces brutes, rangées dans la réserve. À l'étage, des œuvres originales assemblées à partir de trois de ces pièces.</p>
   <div class="barre">
-    <span class="compteur" id="c-gis"></span>
-    <span class="compteur" id="c-tas"></span>
-    <span class="compteur" id="c-ass"></span>
+    <div class="compteurs" id="compteurs"></div>
     <div class="temps">
       <button id="lecture">▶ Timelapse</button>
       <input type="range" id="curseur" min="0" aria-label="Moment de la construction">
@@ -96,29 +91,11 @@
   </div>
 </header>
 <main>
-  <div>
-    <section class="zone">
-      <h2>Gisements <span id="t-gis"></span></h2>
-      <p class="aide">De vrais mangas. Plein : gisement vierge. Cratère : déjà extrait.</p>
-      <div class="gisements" id="gisements"></div>
-    </section>
-    <div class="convoyeur"><span>extraction</span></div>
-    <section class="zone">
-      <h2>Pièces brutes <span id="t-tas"></span></h2>
-      <p class="aide">Chaque carré est une pièce sortie d'un gisement, en attente d'être assemblée.</p>
-      <div class="tas" id="tas"></div>
-    </section>
-    <div class="convoyeur"><span>assemblage</span></div>
-    <section class="zone">
-      <h2>Assemblages · niveau 2 <span id="t-ass"></span></h2>
-      <p class="aide">Des œuvres originales, chacune fabriquée avec 3 pièces de 3 gisements.</p>
-      <div class="produits" id="produits"></div>
-    </section>
-  </div>
-  <aside id="fiche"><p class="accueil">Clique sur un gisement, une pièce ou un assemblage pour voir d'où il vient et ce qu'il est devenu.</p></aside>
+  <div id="batiment"><svg id="liens"></svg><div id="etages"></div></div>
+  <aside id="fiche"><p class="vide">Choisis un livre ou une pièce. Ce qui lui est lié s'éclaire et se relie en doré, le reste s'efface.</p></aside>
 </main>
 <footer id="pied"></footer>
-<script src="data.js"></script>
+<script>window.USINE = {"genere": "2026-11-21T11:53", "objectif": 500, "types": ["monde", "heros", "mecanique", "conflit", "ton"], "etoiles": [], "evenements": [{"type": "gisement", "id": "death-note", "date": "2026-11-21T11:30"}, {"type": "gisement", "id": "dr-stone", "date": "2026-11-21T11:30"}, {"type": "gisement", "id": "gloutons-et-dragons", "date": "2026-11-21T11:30"}, {"type": "gisement", "id": "hikaru-no-go", "date": "2026-11-21T11:30"}, {"type": "gisement", "id": "kaiji", "date": "2026-11-21T11:30"}, {"type": "gisement", "id": "monster", "date": "2026-11-21T11:30"}, {"type": "gisement", "id": "mushishi", "date": "2026-11-21T11:30"}, {"type": "gisement", "id": "planetes", "date": "2026-11-21T11:30"}, {"type": "gisement", "id": "vinland-saga", "date": "2026-11-21T11:30"}, {"type": "gisement", "id": "yotsuba", "date": "2026-11-21T11:30"}, {"type": "extraction", "id": "death-note", "date": "2026-11-21T11:30"}, {"type": "extraction", "id": "dr-stone", "date": "2026-11-21T11:30"}, {"type": "extraction", "id": "gloutons-et-dragons", "date": "2026-11-21T11:30"}, {"type": "extraction", "id": "hikaru-no-go", "date": "2026-11-21T11:30"}, {"type": "extraction", "id": "kaiji", "date": "2026-11-21T11:30"}, {"type": "extraction", "id": "monster", "date": "2026-11-21T11:30"}, {"type": "extraction", "id": "mushishi", "date": "2026-11-21T11:30"}, {"type": "extraction", "id": "planetes", "date": "2026-11-21T11:30"}, {"type": "extraction", "id": "vinland-saga", "date": "2026-11-21T11:30"}, {"type": "extraction", "id": "yotsuba", "date": "2026-11-21T11:30"}, {"type": "assemblage", "id": "n2-0001", "date": "2026-11-21T11:31"}, {"type": "assemblage", "id": "n2-0002", "date": "2026-11-21T11:32"}, {"type": "assemblage", "id": "n2-0003", "date": "2026-11-21T11:33"}], "gisements": [{"id": "death-note", "titre": "Death Note", "auteurs": ["Tsugumi Ohba", "Takeshi Obata"], "annee": 2003, "genres": ["thriller", "surnaturel", "psychologique"], "sources": [], "generation": 0, "ajoute": "2026-11-21T11:30", "texte": "Un lycéen brillant et désœuvré ramasse un cahier tombé du ciel : quiconque y voit son nom inscrit meurt. Le cahier appartient à un dieu de la mort qui s'ennuie et qui suit désormais le garçon, en spectateur amusé. Persuadé de pouvoir purifier le monde, le lycéen commence à éliminer les criminels un par un. Une partie de l'opinion publique fait de lui une figure de justice anonyme.\n\nFace à lui se dresse un détective excentrique et génial, qui comprend vite que le tueur est quelqu'un de proche de l'enquête. Commence alors un duel d'intelligence où chacun tend des pièges à l'autre sans jamais pouvoir frapper le premier. Le lycéen infiltre l'enquête qui le traque, et le détective le soupçonne sans pouvoir le prouver.\n\nLa singularité de l'œuvre tient à son affrontement presque entièrement mental : les batailles sont des raisonnements, des règles exploitées, des alibis construits. Au fil des tomes, le récit pose la question de ce que devient un idéaliste qui s'accorde le droit de tuer, et le héros se transforme peu à peu en ce qu'il prétendait combattre.", "fichier": "gisements/death-note.md", "ordre": 0}, {"id": "dr-stone", "titre": "Dr. Stone", "auteurs": ["Riichiro Inagaki", "Boichi"], "annee": 2017, "genres": ["aventure", "science-fiction", "post-apocalyptique"], "sources": [], "generation": 0, "ajoute": "2026-11-21T11:30", "texte": "Un éclair mystérieux pétrifie l'humanité entière en un instant. Des millénaires plus tard, un adolescent passionné de sciences se libère de sa gangue de pierre. Il découvre un monde rendu à la forêt, où ne subsistent ni villes ni machines. Il se fixe un objectif démesuré : reconstruire toute la civilisation, du feu jusqu'aux technologies modernes, en ne partant de rien.\n\nIl trouve rapidement un moyen de libérer d'autres pétrifiés. Mais un jeune homme d'une force redoutable préfère un monde sans technologie, débarrassé des adultes qui l'ont corrompu. Deux visions s'affrontent : un royaume de la science qui grandit invention après invention, et un empire fondé sur la force.\n\nL'originalité de la série vient de son moteur : chaque chapitre est une étape de fabrication concrète, du savon à la radio, avec les erreurs, les matières premières à trouver et les étapes intermédiaires. La science y devient une épopée collective. Le héros recrute plus qu'il ne combat, et la série célèbre sans cynisme la joie de comprendre et de construire.", "fichier": "gisements/dr-stone.md", "ordre": 1}, {"id": "gloutons-et-dragons", "titre": "Gloutons & Dragons", "auteurs": ["Ryoko Kui"], "annee": 2014, "genres": ["fantasy", "cuisine", "comédie"], "sources": [], "generation": 0, "ajoute": "2026-11-21T11:30", "texte": "Un groupe d'aventuriers est mis en déroute au fond d'un donjon par un dragon rouge. Celui-ci avale la sœur du chef du groupe juste avant qu'un sort ne renvoie les autres à la surface. Il faut la sauver avant que le dragon ne la digère, mais le groupe a tout perdu, y compris son argent. Le chef décide donc de redescendre sans provisions et de se nourrir des monstres rencontrés en chemin.\n\nIls sont rejoints par un nain qui cuisine les créatures du donjon depuis des années. Chaque chapitre devient une recette : scorpions géants, plantes carnivores, armures animées dont on découvre qu'elles sont des colonies de mollusques… Le donjon y est pensé comme un écosystème cohérent, avec ses prédateurs, ses proies et ses règles biologiques.\n\nSous la comédie culinaire, l'œuvre construit un monde d'une profondeur rare : la nature réelle du donjon, la magie interdite qui permet de ressusciter les morts, et les désirs qui consument ceux qui cherchent le pouvoir. Ce qu'on mange, ce qu'on sacrifie et ce qu'on désire y forment le cœur d'une fantasy à la fois chaleureuse et vertigineuse.", "fichier": "gisements/gloutons-et-dragons.md", "ordre": 2}, {"id": "hikaru-no-go", "titre": "Hikaru no Go", "auteurs": ["Yumi Hotta", "Takeshi Obata"], "annee": 1998, "genres": ["jeu", "sport", "surnaturel"], "sources": [], "generation": 0, "ajoute": "2026-11-21T11:30", "texte": "Un collégien turbulent fouille le grenier de son grand-père et tombe sur un vieux goban, le plateau du jeu de go. Il réveille l'esprit d'un joueur de l'ère Heian, mort depuis un millénaire et animé d'un seul désir : atteindre le coup divin. Seul l'adolescent peut voir et entendre ce fantôme, qui le supplie de jouer pour lui.\n\nD'abord indifférent, le garçon pose les pierres que l'esprit lui dicte. Il bat ainsi un enfant prodige, fils d'un grand maître, qui en fait aussitôt son rival obsessionnel. Piqué au vif, le héros se met à apprendre lui-même. Il passe par les clubs scolaires, les écoles d'aspirants, puis le monde professionnel, jusqu'à ce que son propre jeu commence à éclipser celui de son fantôme.\n\nLa série a rendu le go populaire auprès de toute une génération. Elle raconte une passion qui grandit, une rivalité qui façonne deux joueurs, et une transmission : que reste-t-il d'un maître quand l'élève n'a plus besoin de lui ? Le dernier arc, autour de la disparition du fantôme, lui donne une profondeur inattendue.", "fichier": "gisements/hikaru-no-go.md", "ordre": 3}, {"id": "kaiji", "titre": "Kaiji", "auteurs": ["Nobuyuki Fukumoto"], "annee": 1996, "genres": ["jeu", "thriller", "psychologique"], "sources": [], "generation": 0, "ajoute": "2026-11-21T11:30", "texte": "Un jeune homme sans emploi passe ses journées à boire et à commettre de petites bassesses. Un jour, on vient lui réclamer une dette énorme qu'il a contractée en se portant garant pour un ami. On lui propose une seule issue : monter à bord d'un bateau où se tient une nuit de jeu. Les gagnants effacent leurs dettes, les perdants disparaissent.\n\nLes jeux sont simples en apparence, comme un pierre-feuille-ciseaux avec des cartes ou un pont suspendu au-dessus du vide. Mais chacun est un piège, conçu par une organisation de riches qui parie sur la souffrance des endettés. Le héros, lâche et maladroit dans la vie ordinaire, se révèle d'une lucidité stupéfiante lorsqu'il n'a plus rien à perdre. Il apprend aussi que la confiance envers les autres joueurs est à la fois sa plus grande faiblesse et sa seule arme.\n\nL'œuvre est célèbre pour sa tension presque insoutenable : une seule partie peut s'étirer sur des chapitres entiers, au rythme des calculs et des trahisons. Derrière les jeux, c'est une critique féroce d'un système qui fait payer aux plus faibles les fantasmes des plus riches.", "fichier": "gisements/kaiji.md", "ordre": 4}, {"id": "monster", "titre": "Monster", "auteurs": ["Naoki Urasawa"], "annee": 1994, "genres": ["thriller", "policier", "psychologique"], "sources": [], "generation": 0, "ajoute": "2026-11-21T11:30", "texte": "Dans les années 1980, un brillant neurochirurgien japonais travaille dans un hôpital allemand. Un soir, il désobéit à sa hiérarchie pour opérer un jeune garçon blessé par balle plutôt que le maire de la ville. Il sauve l'enfant, mais sa carrière s'effondre. Peu après, ses supérieurs meurent empoisonnés, et l'enfant disparaît.\n\nNeuf ans plus tard, le chirurgien comprend que le garçon qu'il a sauvé est devenu un tueur d'une intelligence et d'une froideur absolues. Accusé à tort des meurtres, il prend la fuite. Il s'est juré de tuer de ses mains celui qu'il a ramené à la vie. Sa traque le mène à travers l'Allemagne et l'Europe centrale de l'après-guerre froide, sur les traces d'orphelinats où l'on fabriquait des enfants sans humanité.\n\nL'œuvre tient en haleine par sa lenteur maîtrisée : des dizaines de personnages secondaires, chacun abîmé, croisent la route du héros. Elle interroge la valeur égale de chaque vie, la nature du mal et ce qu'on doit faire quand sa propre bonté a libéré un monstre.", "fichier": "gisements/monster.md", "ordre": 5}, {"id": "mushishi", "titre": "Mushishi", "auteurs": ["Yuki Urushibara"], "annee": 1999, "genres": ["fantastique", "contemplatif", "surnaturel"], "sources": [], "generation": 0, "ajoute": "2026-11-21T11:30", "texte": "Dans un Japon rural indéfini, entre l'époque d'Edo et l'ère Meiji, existent des êtres plus primitifs que les animaux ou les plantes. Ce sont des formes de vie à la frontière de la matière, invisibles pour la plupart des gens. Ils provoquent parfois d'étranges phénomènes : une surdité qui fait entendre l'inaudible, une pluie de lumière, des rêves qui débordent sur la réalité.\n\nUn homme aux cheveux blancs, fumeur et solitaire, parcourt les villages pour étudier ces créatures et soigner ceux qu'elles affectent. Il ne les combat pas : il cherche l'équilibre, rappelant que ces êtres ne font que vivre selon leur nature.\n\nChaque chapitre est une histoire presque indépendante, un village, une famille, un phénomène, que le voyageur démêle avant de reprendre la route. Le charme de l'œuvre tient à son rythme lent, à ses paysages de montagne et de brume, et à sa vision d'une nature indifférente plutôt que cruelle. Les fins sont souvent douces-amères, et le voyageur porte lui-même un passé effacé, lié aux créatures qu'il étudie.", "fichier": "gisements/mushishi.md", "ordre": 6}, {"id": "planetes", "titre": "Planetes", "auteurs": ["Makoto Yukimura"], "annee": 1999, "genres": ["science-fiction", "drame", "travail"], "sources": [], "generation": 0, "ajoute": "2026-11-21T11:30", "texte": "Vers 2070, l'humanité exploite la Lune et prépare ses premiers voyages lointains. Mais l'orbite terrestre est encombrée de débris, et un simple boulon lancé à pleine vitesse peut détruire un vaisseau. Une petite équipe d'éboueurs de l'espace les ramasse : un travail dangereux, mal payé et méprisé.\n\nLe récit suit un jeune homme de cette équipe, cynique en apparence, qui rêve de posséder un jour son propre vaisseau. Il veut faire partie de la première expédition vers Jupiter, et il est prêt à tout sacrifier pour ça. À ses côtés, une nouvelle recrue naïve et généreuse affirme que l'amour est la seule réponse à tout, ce qui l'agace profondément.\n\nLa série se distingue par son réalisme scientifique et humain : la décalcification des os, la solitude, les inégalités entre pays riches et pauvres face à l'espace, le terrorisme. Sous le récit de travail se cache une réflexion sur ce que signifie appartenir à un lieu, et sur le prix d'un rêve qui exige de tout quitter.", "fichier": "gisements/planetes.md", "ordre": 7}, {"id": "vinland-saga", "titre": "Vinland Saga", "auteurs": ["Makoto Yukimura"], "annee": 2005, "genres": ["historique", "aventure", "drame"], "sources": [], "generation": 0, "ajoute": "2026-11-21T11:30", "texte": "Au début du XIᵉ siècle, un enfant voit son père, ancien guerrier légendaire devenu pacifiste, tomber dans un guet-apens. Il grandit au sein de la troupe de mercenaires responsable de sa mort, avec un seul but : affronter leur chef en duel loyal et le tuer. Pendant des années, il devient une arme redoutable au service de l'homme qu'il hait, dans les guerres qui opposent les royaumes du Nord pour la conquête de l'Angleterre.\n\nQuand sa vengeance lui échappe, il se retrouve vide. Vendu comme esclave dans une ferme, il doit apprendre à vivre sans haine, à travailler la terre et à regarder en face le mal qu'il a fait. Il se met alors en quête d'une terre lointaine, au-delà des mers, où l'on pourrait vivre sans guerre ni esclavage.\n\nLa série surprend par son virage : un récit de batailles devient une méditation sur la non-violence, sans renier la brutalité de son époque. Elle se demande ce que signifie être un vrai guerrier, et si l'on peut briser le cycle de la vengeance sans se renier.", "fichier": "gisements/vinland-saga.md", "ordre": 8}, {"id": "yotsuba", "titre": "Yotsuba&!", "auteurs": ["Kiyohiko Azuma"], "annee": 2003, "genres": ["tranche de vie", "comédie"], "sources": [], "generation": 0, "ajoute": "2026-11-21T11:30", "texte": "Une petite fille de cinq ans, à l'énergie inépuisable, emménage avec son père adoptif dans une ville de banlieue. Elle ne connaît presque rien du monde : ni les balançoires, ni les climatiseurs, ni les feux d'artifice. Chaque découverte devient pour elle une aventure considérable, et elle la vit avec une sincérité absolue.\n\nAutour d'elle gravitent les voisines, trois sœurs aux caractères très différents, l'ami géant et placide de son père, et les gens du quartier. Les chapitres suivent les petits événements de l'été et de l'automne : une sortie à la ferme, un orage, une journée de pêche, une cigale attrapée.\n\nL'œuvre n'a quasiment pas d'intrigue, et c'est sa force. Elle repose sur une observation fine des enfants et sur le regard bienveillant des adultes qui les entourent. Le dessin, très détaillé dans les décors, rend chaque lieu familier et lumineux. On en sort avec l'impression d'avoir redécouvert le monde ordinaire à travers des yeux neufs, et sans le moindre cynisme.", "fichier": "gisements/yotsuba.md", "ordre": 9}], "tas": [{"gisement": "death-note", "extrait": "2026-11-21T11:30", "generation": 0, "pieces": {"monde": "Un pays contemporain ordinaire, saturé de médias, de police et d'opinion publique.", "heros": "Un génie qui se croit juste et glisse vers la tyrannie.", "mecanique": "Un duel de déductions où chaque camp anticipe les pièges de l'autre.", "conflit": "Un chat et une souris qui se savent chacun traqués par l'autre.", "ton": "Tendu, froid, cérébral."}, "fichier": "tas/death-note.yaml", "ordre": 10, "utilisations": {"monde": [], "heros": [], "mecanique": ["n2-0003"], "conflit": [], "ton": []}}, {"gisement": "dr-stone", "extrait": "2026-11-21T11:30", "generation": 0, "pieces": {"monde": "Une civilisation effacée, dont il ne reste que la nature et des ruines.", "heros": "Un scientifique optimiste qui croit que tout peut être reconstruit.", "mecanique": "Une progression technologique pas à pas, chaque invention ouvrant la suivante.", "conflit": "Le savoir et la coopération contre la force brute.", "ton": "Énergique, enthousiaste, pédagogique."}, "fichier": "tas/dr-stone.yaml", "ordre": 11, "utilisations": {"monde": ["n2-0002"], "heros": [], "mecanique": [], "conflit": [], "ton": []}}, {"gisement": "gloutons-et-dragons", "extrait": "2026-11-21T11:30", "generation": 0, "pieces": {"monde": "Un donjon qui obéit à une véritable écologie, avec ses chaînes alimentaires.", "heros": "Un groupe de bras cassés, chacun excellent dans un domaine étroit.", "mecanique": "Cuisiner ce qu'on affronte pour pouvoir continuer d'avancer.", "conflit": "La survie, et le prix de ce qu'on est prêt à faire pour sauver un proche.", "ton": "Gourmand, drôle, curieux, plus grave qu'il n'y paraît."}, "fichier": "tas/gloutons-et-dragons.yaml", "ordre": 12, "utilisations": {"monde": [], "heros": [], "mecanique": ["n2-0002"], "conflit": [], "ton": []}}, {"gisement": "hikaru-no-go", "extrait": "2026-11-21T11:30", "generation": 0, "pieces": {"monde": "L'univers clos et exigeant d'un jeu de stratégie millénaire.", "heros": "Un gamin ordinaire, hanté par l'esprit d'un maître ancien.", "mecanique": "Progresser dans un art, partie après partie, jusqu'à dépasser son maître.", "conflit": "Une rivalité qui oblige chacun à devenir meilleur.", "ton": "Ardent, lumineux, avec une pointe de mélancolie."}, "fichier": "tas/hikaru-no-go.yaml", "ordre": 13, "utilisations": {"monde": [], "heros": ["n2-0001"], "mecanique": [], "conflit": [], "ton": []}}, {"gisement": "kaiji", "extrait": "2026-11-21T11:30", "generation": 0, "pieces": {"monde": "Une société de la dette, où les puissants achètent la vie des pauvres.", "heros": "Un perdant qui ne se réveille que dos au mur.", "mecanique": "Des paris psychologiques à enjeux extrêmes, gagnés par la lecture des autres.", "conflit": "Les endettés contre ceux qui organisent leur chute pour s'en divertir.", "ton": "Sueur froide, tension, désespoir et éclairs de génie."}, "fichier": "tas/kaiji.yaml", "ordre": 14, "utilisations": {"monde": [], "heros": [], "mecanique": ["n2-0001"], "conflit": [], "ton": []}}, {"gisement": "monster", "extrait": "2026-11-21T11:30", "generation": 0, "pieces": {"monde": "Une Europe d'après la chute du Mur, hantée par les expériences d'un régime disparu.", "heros": "Un homme bon rongé de remords, qui se croit responsable d'un mal.", "mecanique": "Une traque de ville en ville, où chaque témoin ouvre une piste.", "conflit": "L'enfant qu'on a sauvé, devenu un monstre.", "ton": "Noir, lent, oppressant."}, "fichier": "tas/monster.yaml", "ordre": 15, "utilisations": {"monde": [], "heros": [], "mecanique": [], "conflit": ["n2-0003"], "ton": []}}, {"gisement": "mushishi", "extrait": "2026-11-21T11:30", "generation": 0, "pieces": {"monde": "Une campagne hors du temps, peuplée de formes de vie primitives et invisibles.", "heros": "Un voyageur détaché, qui comprend la nature mieux que les hommes.", "mecanique": "Une rencontre par chapitre, un mystère local à démêler puis à quitter.", "conflit": "Les humains contre une nature qui n'est ni bonne ni mauvaise.", "ton": "Contemplatif, mélancolique, apaisé."}, "fichier": "tas/mushishi.yaml", "ordre": 16, "utilisations": {"monde": ["n2-0001"], "heros": [], "mecanique": [], "conflit": [], "ton": []}}, {"gisement": "planetes", "extrait": "2026-11-21T11:30", "generation": 0, "pieces": {"monde": "L'orbite proche d'une humanité qui commence à peine à habiter l'espace.", "heros": "Un ouvrier désabusé qui rêve encore, sans oser le dire.", "mecanique": "Le quotidien d'un métier ingrat, mission après mission.", "conflit": "Le rêve contre la réalité, l'ambition contre les liens.", "ton": "Mélancolique, réaliste, parfois lumineux."}, "fichier": "tas/planetes.yaml", "ordre": 17, "utilisations": {"monde": [], "heros": [], "mecanique": [], "conflit": [], "ton": []}}, {"gisement": "vinland-saga", "extrait": "2026-11-21T11:30", "generation": 0, "pieces": {"monde": "Un monde de guerriers du Nord, de raids, de rois et d'esclaves.", "heros": "Un vengeur qui doit apprendre à vivre une fois sa vengeance vidée de sens.", "mecanique": "Une quête intérieure qui se joue sur des années.", "conflit": "La violence héritée contre la possibilité d'une vie paisible.", "ton": "Épique, grave, contemplatif par moments."}, "fichier": "tas/vinland-saga.yaml", "ordre": 18, "utilisations": {"monde": ["n2-0003"], "heros": [], "mecanique": [], "conflit": [], "ton": []}}, {"gisement": "yotsuba", "extrait": "2026-11-21T11:30", "generation": 0, "pieces": {"monde": "Le quotidien paisible d'une banlieue ordinaire, avec ses voisins et ses saisons.", "heros": "Une enfant curieuse de tout, qui découvre le monde sans aucun filtre.", "mecanique": "Une petite découverte par chapitre, vécue comme un événement immense.", "conflit": "Presque aucun ; seulement les malentendus d'une enfant face au monde des adultes.", "ton": "Doux, drôle, émerveillé."}, "fichier": "tas/yotsuba.yaml", "ordre": 19, "utilisations": {"monde": [], "heros": [], "mecanique": [], "conflit": [], "ton": ["n2-0002"]}}], "assemblages": [{"id": "n2-0001", "titre": "Le Joueur de brume", "recette": {"monde": "mushishi", "heros": "hikaru-no-go", "mecanique": "kaiji"}, "generation": 0, "ajoute": "2026-11-21T11:31", "texte": "*Dans les vallées où vivent les esprits, on ne les chasse pas : on parie contre eux.*\n\nDans un Japon de montagnes et de brume, hors du temps, des esprits primitifs habitent les sources, les cèdres et les cols. On ne peut ni les tuer ni les chasser, mais on peut jouer contre eux. Les villageois parient pour une bonne récolte, pour la guérison d'un enfant, pour la fin d'une sécheresse. Les mises ne sont jamais de l'argent : on mise un souvenir, une saison de sa vie, la couleur de ses yeux, la voix de quelqu'un qu'on aime.\n\nKōta, douze ans, fils d'un passeur de rivière, n'a jamais rien gagné de sa vie. En tombant dans une source gelée, il ramène en lui l'esprit d'un joueur légendaire, mort trois siècles plus tôt après avoir défié les esprits plus souvent que quiconque. Le fantôme lui souffle ses coups, et Kōta commence à gagner. Puis il comprend que l'esprit qui l'habite a ses propres dettes à régler. Certaines mises qu'il a perdues de son vivant n'ont jamais été payées, et les esprits comptent bien se servir sur son hôte.\n\n**Personnages**\n- **Kōta**, gamin maladroit qui découvre qu'il a un vrai don pour lire ce que veulent les autres, y compris les esprits.\n- **Le joueur**, fantôme élégant et menteur, qui aime Kōta comme un fils et se sert de lui comme d'un pion.\n- **Sae**, la sœur aînée de Kōta. Elle a perdu sa voix lors du premier pari du garçon, et elle ne le lui pardonne pas tout à fait.\n- **L'arbitre**, un vieux moine aveugle qui fixe les règles de chaque partie et ne prend jamais parti.\n\n**Ce qui la rend unique** : les parties ont la tension d'un thriller de jeu, mais elles se jouent contre la nature elle-même. Chaque victoire coûte quelque chose à quelqu'un, et la série ne laisse jamais oublier ce qui a été misé.", "fichier": "assemblages/n2-0001.md", "ordre": 20}, {"id": "n2-0002", "titre": "La Cantine du bout du monde", "recette": {"monde": "dr-stone", "mecanique": "gloutons-et-dragons", "ton": "yotsuba"}, "generation": 0, "ajoute": "2026-11-21T11:32", "texte": "*Chaque plat retrouvé fait revenir un morceau du monde d'avant.*\n\nDes siècles après l'effondrement, la forêt a recouvert les autoroutes et les villes ne sont plus que des collines. Les survivants vivent en petits hameaux qui ont presque tout oublié, jusqu'au goût des choses. On mange pour ne pas mourir, sans savoir qu'on pourrait faire autrement.\n\nMina tire une carriole-cuisine de hameau en hameau. Elle a hérité d'un carnet couvert de noms de plats qu'elle n'a jamais goûtés : ramen, tarte Tatin, injera, pho. À partir de la faune et de la flore mutantes, elle tente de les reconstituer. Il faut identifier les champignons qui ne tuent pas, apprivoiser les insectes géants pour leur miel, retrouver la fermentation par essais et erreurs. Chaque recette réussie ramène avec elle un fragment de culture : une fête, une chanson, un mot oublié.\n\nLa série avance au rythme d'un plat par chapitre. Elle prend son temps et s'émerveille de chaque petite victoire. Mais en filigrane, un mystère grandit : pourquoi le carnet contient-il aussi des plats qui n'ont jamais existé avant l'effondrement ?\n\n**Personnages**\n- **Mina**, cuisinière têtue et joyeuse, qui goûte absolument tout, même ce qu'elle ne devrait pas.\n- **Bôzu**, un énorme chien-sanglier qui tire la carriole et qui ne mange que des légumes.\n- **Tasse**, une fillette d'un hameau qui suit Mina sans y avoir été invitée et qui pose des questions sur tout.\n- **Le vieux Ilyas**, dernier homme à savoir lire dans la région. Il traduit le carnet, mais il ne dit pas tout ce qu'il y lit.\n\n**Ce qui la rend unique** : un monde post-apocalyptique raconté sans violence, du point de vue du goût. La reconstruction de la civilisation y passe par la cuisine plutôt que par la science ou la guerre.", "fichier": "assemblages/n2-0002.md", "ordre": 21}, {"id": "n2-0003", "titre": "L'Assemblée", "recette": {"monde": "vinland-saga", "mecanique": "death-note", "conflit": "monster"}, "generation": 0, "ajoute": "2026-11-21T11:33", "texte": "*Il n'a jamais levé la main sur personne. Il a seulement gagné tous ses procès.*\n\nEn Islande, vers l'an 1000, il n'y a pas de roi. Chaque été, les chefs de clan et leurs hommes se retrouvent dans une plaine de lave pour l'assemblée des lois. On y règle les querelles, les héritages et les meurtres. Celui qui perd un procès peut être déclaré hors-la-loi, et alors n'importe qui a le droit de le tuer. Dans ce pays, la loi est une arme plus sûre que l'épée.\n\nThorgrim, vieux juriste respecté, connaît par cœur toutes les lois de l'île. Un hiver, il a repêché un enfant sur la grève après un naufrage et l'a élevé comme son fils, lui transmettant tout son savoir. Vingt ans plus tard, l'orphelin, Hallvard, est devenu le plaideur le plus redoutable de l'assemblée. Des hommes meurent à cause de lui, et il ne lève jamais la main : il pousse ses adversaires à commettre des fautes de procédure, retourne les témoins, et fait proscrire ceux qui le gênent.\n\nThorgrim comprend qu'il a formé un tueur. Il ne peut l'arrêter qu'avec les seules armes qu'il lui a lui-même données. Chaque assemblée devient un duel d'intelligence où le maître et l'élève se tendent des pièges juridiques, devant des clans qui comptent les morts.\n\n**Personnages**\n- **Thorgrim**, vieux juriste rigoureux, hanté par l'idée que tout ce qu'il a enseigné sert désormais à tuer.\n- **Hallvard**, l'orphelin, poli, patient et sans aucune haine. C'est ce qui le rend terrifiant.\n- **Ásdís**, veuve d'une victime de Hallvard, qui veut une vengeance de sang plutôt qu'un procès.\n- **Le diseur de lois**, qui récite la loi devant l'assemblée et doit rester neutre, mais qui a peur.\n\n**Ce qui la rend unique** : un thriller de duel mental dans un monde de guerriers, où les combats les plus mortels se gagnent avec des mots.", "fichier": "assemblages/n2-0003.md", "ordre": 22}]};</script>
 <script>
 const U = window.USINE;
 const TYPES = U.types;
@@ -126,9 +103,18 @@ const NOM = { monde: "Monde", heros: "Héros", mecanique: "Mécanique", conflit:
 const gis = Object.fromEntries(U.gisements.map(g => [g.id, g]));
 const tas = Object.fromEntries(U.tas.map(t => [t.gisement, t]));
 const ass = Object.fromEntries(U.assemblages.map(a => [a.id, a]));
-const PALETTE = ["#7a4fa0", "#3f7fa8", "#a8503f", "#4f9a6a", "#a8873f", "#8a3f6a", "#3f9a96", "#6a7a3f", "#a86a3f", "#5a5fa8"];
+const etoiles = new Set(U.etoiles);
+const PALETTE = {
+  "thriller": "#7b2d2d", "policier": "#5e3a4a", "psychologique": "#6a3d5c", "surnaturel": "#4b3f7a", "fantastique": "#3e5a78",
+  "contemplatif": "#3f6b68", "fantasy": "#2f6a52", "aventure": "#8a5a24", "science-fiction": "#2d5d7c", "post-apocalyptique": "#6e6a2e",
+  "historique": "#7a4a2a", "drame": "#5a4636", "jeu": "#9a4a1e", "sport": "#a0611f", "cuisine": "#8f6d1f", "comédie": "#9a7a2a",
+  "tranche de vie": "#5f7a3a", "travail": "#4e5d66", "romance": "#8a3e57", "horreur": "#3d2a2a", "mecha": "#4a5560", "musique": "#6a4a7a",
+  "mystère": "#3d4a66", "action": "#8c3a24", "école": "#5a6e3e", "guerre": "#5c4a3a",
+};
 const hash = s => { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; };
-const couleurGis = g => PALETTE[hash((g.genres || ["?"])[0]) % PALETTE.length];
+const couleurGenre = g => PALETTE[g] || `hsl(${hash(g) % 360} 35% 34%)`;
+const couleurGis = id => couleurGenre(((gis[id] || {}).genres || ["drame"])[0]);
+const OEUVRES = ["#6b3a2a", "#2f4f5f", "#5a3b5e", "#3e5b3a", "#6a5226", "#4a3a6a", "#2f5a52", "#6a2f3e"];
 const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const md = t => {
   const inl = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\*(.+?)\*/g, "<i>$1</i>").replace(/ ([?!:;»])/g, " $1").replace(/« /g, "« ");
@@ -143,82 +129,95 @@ const md = t => {
   }).join("");
 };
 
+const etagesEl = document.getElementById("etages");
+const svg = document.getElementById("liens");
 const curseur = document.getElementById("curseur");
 const N = U.evenements.length;
 curseur.max = N; curseur.value = N;
 let limite = N, choix = null;
-
 const visible = o => o && o.ordre < limite;
-const consommateur = (g, t) => { const a = tas[g] && tas[g].consommees[t]; return a && visible(ass[a]) ? a : null; };
+const utilisations = (g, t) => ((tas[g] || {}).utilisations || {})[t] ? tas[g].utilisations[t].filter(a => visible(ass[a])) : [];
+
+function dos(k, titre, couleur, largeur, cls) {
+  return `<div class="case"><div class="dos ${cls}" data-k="${k}" title="${esc(titre)}" style="width:${largeur}px;height:${84 + hash(k) % 26}px;background:${couleur}"><span>${esc(titre)}</span></div></div>`;
+}
 
 function rendre() {
   const G = U.gisements.filter(visible), T = U.tas.filter(visible), A = U.assemblages.filter(visible);
   const extraits = new Set(T.map(t => t.gisement));
-  let enStock = 0;
-  const piles = Object.fromEntries(TYPES.map(t => [t, []]));
-  for (const t of T) for (const ty of TYPES) if (!consommateur(t.gisement, ty)) { piles[ty].push(t.gisement); enStock++; }
-
-  document.getElementById("c-gis").innerHTML = `<b>${G.length}</b>/ ${U.objectif} gisements`;
-  document.getElementById("c-tas").innerHTML = `<b>${enStock}</b>pièces sur les tas`;
-  document.getElementById("c-ass").innerHTML = `<b>${A.length}</b>assemblages`;
-  document.getElementById("t-gis").textContent = `${G.length - extraits.size} vierges · ${extraits.size} extraits`;
-  document.getElementById("t-tas").textContent = `${T.length * TYPES.length} extraites · ${A.length * 3} consommées`;
-  document.getElementById("t-ass").textContent = `${A.length}`;
+  document.getElementById("compteurs").innerHTML =
+    `<span class="compteur"><b>${G.length}</b> / ${U.objectif} gisements</span><span class="compteur"><b>${T.length * TYPES.length}</b> pièces</span><span class="compteur"><b>${A.length}</b> œuvres assemblées</span>`;
   const ev = U.evenements[limite - 1];
   document.getElementById("date").textContent = ev ? `${limite}/${N} · ${ev.date.replace("T", " ")}` : "rien encore";
 
-  document.getElementById("gisements").innerHTML = G.map(g =>
-    `<div class="gis${extraits.has(g.id) ? " extrait" : ""}" data-k="g:${g.id}" title="${esc(g.titre)}" style="--c:${couleurGis(g)}"></div>`).join("")
-    || `<p class="vide-zone">Aucun gisement découvert.</p>`;
-  document.getElementById("tas").innerHTML = TYPES.map(ty => `<div class="pile" style="--c:var(--${ty})"><h3><i></i>${NOM[ty]}</h3>
-    <div class="nb">${piles[ty].length} en stock</div>
-    <div class="items">${piles[ty].map(g => `<div class="item" data-k="p:${g}:${ty}" title="${esc(gis[g].titre)} — ${NOM[ty].toLowerCase()}"></div>`).join("")}</div></div>`).join("");
-  document.getElementById("produits").innerHTML = A.slice().reverse().map(a => `<div class="produit" data-k="a:${a.id}">
-    <div class="id">${a.id}</div><div class="t">${esc(a.titre)}</div>
-    <div class="pips">${Object.keys(a.recette).map(t => `<i style="--c:var(--${t})" title="${NOM[t]}"></i>`).join("")}</div></div>`).join("")
-    || `<p class="vide-zone">Rien n'a encore été assemblé.</p>`;
-  document.querySelectorAll("main [data-k]").forEach(el => el.addEventListener("click", () => choisir(el.dataset.k)));
-  if (choix) surligner();
+  let h = `<div class="etage"><div class="plaque"><div class="num">Étage 2</div><div class="nom">Œuvres assemblées</div><div class="nb">${A.length}</div></div><div class="rayon">`;
+  h += A.map(a => dos("a:" + a.id, a.titre, OEUVRES[hash(a.id) % OEUVRES.length], 30, "oeuvre")).join("") || `<p class="vide-rayon">Rien n'a encore été assemblé.</p>`;
+  h += `</div></div>`;
+  h += `<div class="etage"><div class="plaque"><div class="num">Réserve</div><div class="nom">Pièces brutes</div><div class="nb">${T.length * TYPES.length}</div></div><div class="reserve">`;
+  for (const ty of TYPES) {
+    h += `<div class="rangee" style="--c:var(--${ty})"><div class="lib"><i></i>${NOM[ty]}</div><div class="briques">` +
+      T.map(t => `<div class="brique" data-k="p:${t.gisement}:${ty}" title="${esc(gis[t.gisement].titre)} — ${NOM[ty].toLowerCase()}"></div>`).join("") + `</div></div>`;
+  }
+  h += `</div></div>`;
+  h += `<div class="etage"><div class="plaque"><div class="num">Rez-de-chaussée</div><div class="nom">Gisements · mangas réels</div><div class="nb">${G.length} · ${G.length - extraits.size} vierges</div></div><div class="rayon">`;
+  h += G.map(g => dos("g:" + g.id, g.titre, couleurGis(g.id), 22, (extraits.has(g.id) ? "" : "vierge") + (etoiles.has(g.id) ? " etoile" : ""))).join("") || `<p class="vide-rayon">Aucun gisement.</p>`;
+  h += `</div></div>`;
+  etagesEl.innerHTML = h;
+  etagesEl.querySelectorAll("[data-k]").forEach(el => el.addEventListener("click", () => choisir(el.dataset.k)));
+  if (choix && etagesEl.querySelector(`[data-k="${CSS.escape(choix)}"]`)) surligner(); else effacer();
 }
 
-function liesA(k) {
-  const [genre, id, ty] = k.split(":"); const s = new Set([k]);
-  if (genre === "g") { s.add("g:" + id); TYPES.forEach(t => { s.add(`p:${id}:${t}`); const a = consommateur(id, t); if (a) s.add("a:" + a); }); }
-  if (genre === "p") { s.add("g:" + id); const a = consommateur(id, ty); if (a) s.add("a:" + a); }
-  if (genre === "a") Object.values(ass[id].recette).forEach(g => s.add("g:" + g));
-  return s;
+function liens(k) {
+  const [genre, id, ty] = k.split(":"); const aretes = [];
+  if (genre === "a") for (const [t, g] of Object.entries(ass[id].recette)) { aretes.push([k, `p:${g}:${t}`]); aretes.push([`p:${g}:${t}`, "g:" + g]); }
+  if (genre === "g" && visible(tas[id])) for (const t of TYPES) { aretes.push([`p:${id}:${t}`, k]); for (const a of utilisations(id, t)) aretes.push(["a:" + a, `p:${id}:${t}`]); }
+  if (genre === "p") { aretes.push([k, "g:" + id]); for (const a of utilisations(id, ty)) aretes.push(["a:" + a, k]); }
+  return aretes;
 }
+
+function effacer() { choix = null; svg.innerHTML = ""; etagesEl.classList.remove("attenue"); etagesEl.querySelectorAll(".choisi").forEach(x => x.classList.remove("choisi")); }
+
 function surligner() {
-  const s = liesA(choix);
-  document.querySelector("main").classList.add("attenue");
-  document.querySelectorAll("main > div [data-k]").forEach(el => { el.classList.toggle("lie", s.has(el.dataset.k)); el.classList.toggle("choisi", el.dataset.k === choix); });
+  const aretes = liens(choix);
+  const lies = new Set([choix, ...aretes.flat()]);
+  etagesEl.classList.add("attenue");
+  etagesEl.querySelectorAll("[data-k]").forEach(el => { el.classList.toggle("lie", lies.has(el.dataset.k)); el.classList.toggle("choisi", el.dataset.k === choix); });
+  const base = document.getElementById("batiment").getBoundingClientRect();
+  svg.setAttribute("width", base.width); svg.setAttribute("height", base.height);
+  const point = (k, bas) => { const el = etagesEl.querySelector(`[data-k="${CSS.escape(k)}"]`); if (!el) return null;
+    const r = el.getBoundingClientRect(); return [r.left - base.left + r.width / 2, (bas ? r.bottom : r.top) - base.top]; };
+  svg.innerHTML = aretes.map(([haut, bas]) => {
+    const a = point(haut, true), b = point(bas, false); if (!a || !b) return "";
+    const my = (a[1] + b[1]) / 2;
+    return `<path d="M${a[0]} ${a[1]} C${a[0]} ${my} ${b[0]} ${my} ${b[0]} ${b[1]}" fill="none" stroke="#d6a546" stroke-width="1.3" stroke-opacity=".8"/>`;
+  }).join("");
 }
 
 const lienGis = g => `<span class="lien" data-k="g:${g}">${esc(gis[g].titre)}</span>`;
 const lienAss = a => `<span class="lien" data-k="a:${a}">${esc(ass[a].titre)}</span>`;
 function lignePiece(g, ty, avecSource) {
-  const a = consommateur(g, ty);
-  return `<div class="ligne-piece${a ? " mangee" : ""}" style="--c:var(--${ty})" data-k="p:${g}:${ty}"><i></i><div>${esc(tas[g].pieces[ty])}
-    <small>${NOM[ty]}${avecSource ? " · de " + esc(gis[g].titre) : ""} · ${a ? "consommée par " + esc(ass[a].titre) : "sur le tas"}</small></div></div>`;
+  const us = utilisations(g, ty);
+  return `<div class="ligne-piece" style="--c:var(--${ty})" data-k="p:${g}:${ty}"><i></i><div>${esc(tas[g].pieces[ty])}
+    <small>${NOM[ty]}${avecSource ? " · extraite de " + esc(gis[g].titre) : ""} · utilisée ${us.length} fois</small></div></div>`;
 }
 
 function choisir(k) {
   choix = k; const [genre, id, ty] = k.split(":"); let h = "";
   if (genre === "g") {
-    const g = gis[id], extrait = visible(tas[id]);
-    h = `<span class="badge">Gisement · manga réel</span><h2>${esc(g.titre)}</h2>
+    const g = gis[id];
+    h = `<span class="badge">Rez-de-chaussée · gisement${etoiles.has(id) ? " · ★" : ""}</span><h2>${esc(g.titre)}</h2>
       <div class="meta">${esc((g.auteurs || []).join(", "))} · ${g.annee} · ${esc((g.genres || []).join(", "))}</div><div class="texte">${md(g.texte)}</div>`;
-    h += `<h3>Pièces extraites</h3>` + (extrait ? TYPES.map(t => lignePiece(id, t, false)).join("") : `<div class="meta">Gisement encore vierge.</div>`);
+    h += `<h3>Pièces extraites</h3>` + (visible(tas[id]) ? TYPES.map(t => lignePiece(id, t, false)).join("") : `<div class="meta">Gisement encore vierge.</div>`);
     if (g.sources && g.sources.length) h += `<h3>Sources</h3><div class="meta">${g.sources.map(s => `<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s.replace(/^https?:\/\//, "").slice(0, 50))}</a>`).join("<br>")}</div>`;
   } else if (genre === "p") {
-    h = `<span class="badge">Pièce brute · ${NOM[ty]}</span><h2>${esc(tas[id].pieces[ty])}</h2>
-      <div class="meta">Extraite du gisement ${lienGis(id)} le ${tas[id].extrait.replace("T", " à ")}.</div>`;
-    const a = consommateur(id, ty);
-    h += a ? `<div class="meta">Consommée par l'assemblage ${lienAss(a)}.</div>` : `<div class="meta">Sur le tas, en attente d'un assembleur.</div>`;
+    const us = utilisations(id, ty);
+    h = `<span class="badge">Réserve · pièce brute · ${NOM[ty]}</span><h2>${esc(tas[id].pieces[ty])}</h2>
+      <div class="meta">Extraite du gisement ${lienGis(id)}.</div>
+      <h3>Utilisée dans</h3><div class="meta">${us.length ? us.map(lienAss).join("<br>") : "Aucune œuvre pour l'instant."}</div>`;
   } else {
     const a = ass[id];
-    h = `<span class="badge">Assemblage · niveau 2 · ${a.id}</span><h2>${esc(a.titre)}</h2>
-      <h3>Pièces consommées</h3>${Object.entries(a.recette).map(([t, g]) => lignePiece(g, t, true)).join("")}
+    h = `<span class="badge">Étage 2 · œuvre assemblée · ${a.id}</span><h2>${esc(a.titre)}</h2>
+      <h3>Pièces utilisées</h3>${Object.entries(a.recette).map(([t, g]) => lignePiece(g, t, true)).join("")}
       <h3>L'œuvre</h3><div class="texte">${md(a.texte)}</div>`;
   }
   const fiche = document.getElementById("fiche"); fiche.innerHTML = h; fiche.scrollTop = 0;
@@ -239,7 +238,8 @@ document.getElementById("lecture").addEventListener("click", e => {
     if (limite >= N) { clearInterval(minuterie); minuterie = null; b.textContent = "▶ Timelapse"; }
   }, 110);
 });
-document.addEventListener("keydown", e => { if (e.key === "Escape") { choix = null; document.querySelector("main").classList.remove("attenue"); document.querySelectorAll(".choisi").forEach(x => x.classList.remove("choisi")); } });
+document.addEventListener("keydown", e => { if (e.key === "Escape") effacer(); });
+window.addEventListener("resize", () => { if (choix) surligner(); });
 document.getElementById("pied").textContent = `Généré le ${U.genere.replace("T", " ")} · Échap pour tout désélectionner`;
 rendre();
 </script>

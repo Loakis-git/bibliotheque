@@ -10,7 +10,7 @@ Ce dépôt est une usine à la Factorio. Elle grandit d'**une brique par passage
 | Pièces brutes | `tas/` | Le minerai qui sort de l'extracteur | Les 5 pièces extraites d'un gisement : `monde`, `heros`, `mecanique`, `conflit`, `ton`. **Rien de nouveau** : on prélève seulement ce qui est dans l'œuvre. |
 | Assemblage | `assemblages/` | Le produit qui sort de l'assembleur | Une **œuvre originale de niveau 2**, fabriquée à partir de 3 pièces venant de 3 gisements différents. |
 
-**Les pièces se consomment.** Une pièce utilisée par un assemblage quitte le tas et ne peut plus servir. Chaque gisement donne ses 5 pièces une seule fois. L'usine doit donc sans cesse prospecter et extraire pour alimenter les assembleurs. Le script calcule le stock à partir des recettes des assemblages : il n'y a rien à cocher à la main.
+Chaque gisement est extrait une seule fois et donne ses 5 pièces. **Une pièce reste disponible après avoir servi** : plusieurs œuvres peuvent utiliser la même. Le script tire de préférence les pièces encore peu utilisées.
 
 Il n'existe pas encore de niveau au-dessus des assemblages. Les essais de niveaux 3 et 4 sont rangés dans `archives/`. Ne les utilise pas et n'y touche pas.
 
@@ -19,7 +19,7 @@ Il n'existe pas encore de niveau au-dessus des assemblages. Les essais de niveau
 1. `python3 scripts/usine.py prochaine` : le script tire au sort l'action selon les besoins de l'usine. Il impose le gisement à extraire, ou les 3 pièces à assembler. **Tu ne choisis jamais toi-même le gisement à extraire ni les pièces à assembler.** C'est ce qui empêche l'usine de tourner autour des mêmes goûts.
 2. Lis les fichiers que le script te désigne.
 3. Écris **un seul** nouveau fichier, au format décrit plus bas.
-4. `python3 scripts/usine.py build` : il valide l'usine et régénère `docs/data.js` (la visualisation). S'il signale une erreur, corrige ton fichier et relance.
+4. `python3 scripts/usine.py build` : il valide l'usine et régénère `docs/index.html` (la visualisation, données intégrées). S'il signale une erreur, corrige ton fichier et relance.
 5. Ajoute une ligne en bas de `journal.md` : `- AAAA-MM-JJ HH:MM · action · id · titre`.
 6. Commit et push sur `main` :
    - message : `Prospection · Akira (akira)`, `Extraction · Akira (akira)` ou `Assemblage · Le Joueur de brume (n2-0004)` ;
@@ -50,7 +50,7 @@ Ne modifie **jamais** un fichier existant de `gisements/`, `tas/` ou `assemblage
 
 ### `assembler` : fabriquer une œuvre de niveau 2
 
-- Le script impose 3 pièces de 3 types différents, venant de 3 gisements différents. Elles sont consommées par ton assemblage.
+- Le script impose 3 pièces de 3 types différents, venant de 3 gisements différents.
 - Écris le pitch d'une série **originale** de 250 à 400 mots :
   - une accroche d'une phrase en italique ;
   - le pitch ;
@@ -114,4 +114,4 @@ Pitch…
 ## Ce que tu ne touches pas
 
 - `etoiles.txt` : le propriétaire y met les gisements qu'il aime. Leurs pièces sont alors tirées plus souvent.
-- `archives/`, les scripts et la visualisation (`scripts/`, `docs/index.html`), sauf si le propriétaire le demande.
+- `archives/`, les scripts et le modèle de la visualisation (`scripts/`, `docs/modele.html`), sauf si le propriétaire le demande. `docs/index.html` est régénéré par `build` : ne l'édite pas à la main.
