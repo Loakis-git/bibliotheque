@@ -1,16 +1,9 @@
 ---
 id: hikaru-no-go
-niveau: 1
 titre: Hikaru no Go
 auteurs: [Yumi Hotta, Takeshi Obata]
 annee: 1998
 genres: [jeu, sport, surnaturel]
-pieces:
-  monde: L'univers clos et exigeant d'un jeu de stratégie millénaire.
-  heros: Un gamin ordinaire, hanté par l'esprit d'un maître ancien.
-  mecanique: Progresser dans un art, partie après partie, jusqu'à dépasser son maître.
-  conflit: Une rivalité qui oblige chacun à devenir meilleur.
-  ton: Ardent, lumineux, avec une pointe de mélancolie.
 sources: []
 generation: 0
 ajoute: 2026-11-21T11:30

@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""L'usine de la Bibliothèque.
+"""L'usine de la Bibliothèque : gisements -> pièces brutes -> assemblages.
 
   python3 scripts/usine.py prochaine        tire au sort la prochaine brique
-  python3 scripts/usine.py build            valide la bibliothèque et régénère docs/data.js
-  python3 scripts/usine.py stats            état des étages
-  python3 scripts/usine.py cherche "titre"  cherche un titre déjà en rayon (étage 1)
+  python3 scripts/usine.py build            valide l'usine et régénère docs/data.js
+  python3 scripts/usine.py stats            état de l'usine
+  python3 scripts/usine.py cherche "titre"  ce titre est-il déjà un gisement ?
 
-Le hasard vient d'ici, pas de l'IA : c'est ce script qui choisit les pièces,
-les parents et le mode de fusion.
+Le hasard vient d'ici, pas de l'IA : c'est ce script qui choisit le gisement
+à extraire et les pièces à assembler.
 """
 import collections
 import datetime
@@ -23,8 +23,9 @@ import yaml
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TYPES = ["monde", "heros", "mecanique", "conflit", "ton"]
-OBJECTIF_N1 = 500
-MIN_N1_POUR_N2 = 8
+OBJECTIF_GISEMENTS = 500
+STOCK_BAS = 12          # en dessous, l'usine réclame de l'extraction
+RESERVE_BASSE = 3       # en dessous, l'usine réclame de la prospection
 GENRES_REFERENCE = [
     "action", "aventure", "comédie", "cuisine", "drame", "fantastique", "fantasy",
     "historique", "horreur", "jeu", "mecha", "musique", "mystère", "policier",
@@ -41,43 +42,44 @@ def norm(texte):
     return re.sub(r"[^a-z0-9]+", " ", t.lower()).strip()
 
 
-def lire_livre(chemin):
+def lire_md(chemin):
     with open(chemin, encoding="utf-8") as f:
         brut = f.read()
     m = re.match(r"^---\s*\n(.*?)\n---\s*\n?(.*)$", brut, re.S)
     if not m:
         raise ValueError("en-tête YAML manquant (le fichier doit commencer par ---)")
     meta = yaml.safe_load(m.group(1)) or {}
-    if not isinstance(meta, dict):
-        raise ValueError("en-tête YAML invalide")
     meta["texte"] = m.group(2).strip()
-    meta["fichier"] = os.path.relpath(chemin, ROOT)
-    if "ajoute" in meta:
-        meta["ajoute"] = str(meta["ajoute"])
     return meta
 
 
+def lire_yaml(chemin):
+    with open(chemin, encoding="utf-8") as f:
+        return yaml.safe_load(f) or {}
+
+
 def charger(erreurs=None):
-    livres = {}
-    for chemin in sorted(glob.glob(os.path.join(ROOT, "livres", "n*", "*.md"))):
-        try:
-            livre = lire_livre(chemin)
-        except Exception as e:  # noqa: BLE001
-            if erreurs is not None:
-                erreurs.append(f"{os.path.relpath(chemin, ROOT)} : {e}")
+    """Renvoie (gisements, tas, assemblages), chacun indexé par id."""
+    res = []
+    for dossier, lecteur, ext in (("gisements", lire_md, "md"), ("tas", lire_yaml, "yaml"),
+                                  ("assemblages", lire_md, "md")):
+        d = {}
+        for chemin in sorted(glob.glob(os.path.join(ROOT, dossier, f"*.{ext}"))):
+            nom = os.path.splitext(os.path.basename(chemin))[0]
+            try:
+                x = lecteur(chemin)
+            except Exception as e:  # noqa: BLE001
+                if erreurs is None:
+                    raise
+                erreurs.append(f"{dossier}/{nom}.{ext} : {e}")
                 continue
-            raise
-        lid = livre.get("id")
-        if lid in livres and erreurs is not None:
-            erreurs.append(f"id en double : {lid}")
-        livres[lid] = livre
-    return livres
-
-
-def parents_de(livre):
-    if livre.get("niveau") == 2:
-        return list((livre.get("recette") or {}).values())
-    return list(livre.get("parents") or [])
+            x["fichier"] = f"{dossier}/{nom}.{ext}"
+            for champ in ("ajoute", "extrait"):
+                if champ in x:
+                    x[champ] = str(x[champ])
+            d[nom] = x
+        res.append(d)
+    return tuple(res)
 
 
 def etoiles():
@@ -88,86 +90,32 @@ def etoiles():
         return {l.strip() for l in f if l.strip() and not l.startswith("#")}
 
 
-def modes():
-    with open(os.path.join(ROOT, "recettes", "modes-de-fusion.md"), encoding="utf-8") as f:
-        brut = f.read()
-    res = {}
-    for bloc in re.split(r"^## ", brut, flags=re.M)[1:]:
-        nom, _, corps = bloc.partition("\n")
-        res[nom.strip()] = corps.strip()
-    return res
-
-
-def comptes(livres):
-    c = collections.Counter(l.get("niveau") for l in livres.values())
+def consommees(assemblages):
+    """Pièce (gisement, type) -> id de l'assemblage qui l'a consommée."""
+    c = {}
+    for aid, a in assemblages.items():
+        for t, g in (a.get("recette") or {}).items():
+            c[(g, t)] = aid
     return c
 
 
-def niveau_max(c):
-    return max([k for k in c if isinstance(k, int)] or [1])
+def stock(tas, assemblages):
+    """Les pièces brutes encore disponibles sur les tas : liste de (gisement, type)."""
+    c = consommees(assemblages)
+    return [(g, t) for g, x in sorted(tas.items()) for t in TYPES
+            if (x.get("pieces") or {}).get(t) and (g, t) not in c]
 
 
-def debloque(c, k):
-    """Peut-on écrire un nouveau livre à l'étage k ?"""
-    if k == 1:
-        return c[1] < OBJECTIF_N1
-    if k == 2 and c[1] < MIN_N1_POUR_N2:
-        return False
-    return c[k - 1] >= 2 * (c[k] + 1)
-
-
-def racines(lid, livres, memo=None):
-    memo = {} if memo is None else memo
-    if lid in memo:
-        return memo[lid]
-    livre = livres.get(lid)
-    if livre is None:
-        return set()
-    if livre.get("niveau") == 1:
-        memo[lid] = {lid}
-        return memo[lid]
-    res = set()
-    for p in parents_de(livre):
-        res |= racines(p, livres, memo)
-    memo[lid] = res
-    return res
-
-
-def usages(livres):
-    u = collections.Counter()
-    for l in livres.values():
-        for p in parents_de(l):
-            u[p] += 1
-    return u
-
-
-def prochain_id(livres, k):
-    nums = [int(m.group(1)) for lid in livres
-            if (m := re.match(rf"^n{k}-(\d+)$", str(lid)))]
-    return f"n{k}-{(max(nums) + 1 if nums else 1):04d}"
+def prochain_id(assemblages):
+    nums = [int(m.group(1)) for a in assemblages if (m := re.match(r"^n2-(\d+)$", a))]
+    return f"n2-{(max(nums) + 1 if nums else 1):04d}"
 
 
 # ---------------------------------------------------------------- tirage
 
-def poids_livre(lid, stars, u):
-    return (3.0 if lid in stars else 1.0) / (1 + u[lid])
-
-
-def tirage_pondere(rng, elements, poids, n):
-    """n éléments distincts, tirés au hasard selon leurs poids."""
-    elements, poids = list(elements), list(poids)
-    res = []
-    for _ in range(min(n, len(elements))):
-        i = rng.choices(range(len(elements)), weights=poids)[0]
-        res.append(elements.pop(i))
-        poids.pop(i)
-    return res
-
-
-def tirer_recenser(rng, livres):
-    n1 = [l for l in livres.values() if l.get("niveau") == 1]
-    genres = collections.Counter(norm(g) for l in n1 for g in (l.get("genres") or []))
-    decs = collections.Counter((int(l["annee"]) // 10) * 10 for l in n1 if l.get("annee"))
+def tirer_prospecter(rng, gisements):
+    genres = collections.Counter(norm(g) for x in gisements.values() for g in (x.get("genres") or []))
+    decs = collections.Counter((int(x["annee"]) // 10) * 10 for x in gisements.values() if x.get("annee"))
     if rng.random() < 0.5:
         rares = sorted(GENRES_REFERENCE, key=lambda g: (genres[norm(g)], rng.random()))[:5]
         cible = f"un manga dont le genre principal est « {rng.choice(rares)} »"
@@ -175,110 +123,90 @@ def tirer_recenser(rng, livres):
         rares = sorted(DECENNIES, key=lambda d: (decs[d], rng.random()))[:3]
         cible = f"un manga dont la publication a commencé dans les années {rng.choice(rares)}"
     return {
-        "action": "recenser",
-        "niveau": 1,
+        "action": "prospecter",
         "cible": cible,
-        "dossier": "livres/n1/",
-        "consigne": "Choisis un vrai manga qui correspond à la cible et qui n'est pas déjà en rayon "
-                    "(vérifie avec `usine.py cherche`). L'id est le slug du titre (minuscules, tirets).",
-        "deja_en_rayon": len(n1),
+        "fichier_a_creer": "gisements/<slug-du-titre>.md",
+        "gisements_connus": len(gisements),
     }
 
 
-def tirer_assembler(rng, livres, stars, u):
-    n1 = sorted(lid for lid, l in livres.items() if l.get("niveau") == 1)
-    existantes = {tuple(sorted((l.get("recette") or {}).items()))
-                  for l in livres.values() if l.get("niveau") == 2}
-    for _ in range(50):
-        types = ["monde"] + rng.sample(TYPES[1:], 2)
-        sources = tirage_pondere(rng, n1, [poids_livre(x, stars, u) for x in n1], 3)
-        recette = dict(zip(types, sources))
-        if tuple(sorted(recette.items())) not in existantes:
-            break
+def tirer_extraire(rng, gisements, tas):
+    vierges = sorted(g for g in gisements if g not in tas)
+    g = rng.choice(vierges)
     return {
-        "action": "assembler",
-        "niveau": 2,
-        "id": prochain_id(livres, 2),
-        "recette": recette,
-        "pieces": {t: livres[s]["pieces"][t] for t, s in recette.items()},
-        "lire": [livres[s]["fichier"] for s in recette.values()],
-        "dossier": "livres/n2/",
+        "action": "extraire",
+        "gisement": g,
+        "titre": gisements[g].get("titre"),
+        "lire": [gisements[g]["fichier"]],
+        "fichier_a_creer": f"tas/{g}.yaml",
     }
 
 
-def tirer_fusionner(rng, livres, k, stars, u, liste_modes):
-    cands = sorted(lid for lid, l in livres.items() if l.get("niveau") == k - 1)
-    if len(cands) < 2:
-        return None
-    deja = {frozenset(parents_de(l)) for l in livres.values() if l.get("niveau", 0) >= 3}
-    poids = [poids_livre(x, stars, u) for x in cands]
-    memo = {}
-    paires = []
-    for _ in range(40):
-        a, b = tirage_pondere(rng, cands, poids, 2)
-        if frozenset((a, b)) in deja:
-            continue
-        ra, rb = racines(a, livres, memo), racines(b, livres, memo)
-        chevauchement = len(ra & rb) / max(1, len(ra | rb))
-        paires.append((chevauchement, rng.random(), a, b))
-    if not paires:
-        return None
-    if k >= 4:
-        # Convergence lente : à haut niveau, on fusionne de préférence des branches éloignées.
-        paires.sort()
-    a, b = paires[0][2], paires[0][3]
-    mode = rng.choice(sorted(liste_modes))
-    lire = [livres[a]["fichier"], livres[b]["fichier"], "recettes/modes-de-fusion.md"]
-    if k >= 4:
-        lire.append("canon/bible.md")
-    return {
-        "action": "fusionner",
-        "niveau": k,
-        "id": prochain_id(livres, k),
-        "parents": [a, b],
-        "titres_parents": [livres[a].get("titre"), livres[b].get("titre")],
-        "mode": mode,
-        "definition_du_mode": liste_modes[mode].split("\n")[0],
-        "lire": lire,
-        "dossier": f"livres/n{k}/",
-        "canon": "Ajoute 1 à 3 entrées à canon/bible.md et liste-les dans le champ `canon`." if k >= 4 else None,
-    }
+def tirer_assembler(rng, gisements, tas, assemblages, stars):
+    dispo = stock(tas, assemblages)
+    par_type = collections.defaultdict(list)
+    for g, t in dispo:
+        par_type[t].append(g)
+    for _ in range(100):
+        # Les types les plus abondants sur les tas sont tirés plus souvent : l'usine écoule ses stocks.
+        types_dispo = [t for t in TYPES if par_type[t]]
+        if len(types_dispo) < 3:
+            return None
+        types = []
+        restants = list(types_dispo)
+        for _ in range(3):
+            t = rng.choices(restants, weights=[len(par_type[x]) for x in restants])[0]
+            types.append(t)
+            restants.remove(t)
+        recette, pris = {}, set()
+        for t in types:
+            cands = [g for g in par_type[t] if g not in pris]
+            if not cands:
+                break
+            g = rng.choices(cands, weights=[3 if g in stars else 1 for g in cands])[0]
+            recette[t] = g
+            pris.add(g)
+        if len(recette) == 3:
+            recette = {t: recette[t] for t in TYPES if t in recette}
+            return {
+                "action": "assembler",
+                "id": prochain_id(assemblages),
+                "recette": recette,
+                "pieces": {t: tas[g]["pieces"][t] for t, g in recette.items()},
+                "origine": {t: gisements.get(g, {}).get("titre", g) for t, g in recette.items()},
+                "fichier_a_creer": f"assemblages/{prochain_id(assemblages)}.md",
+            }
+    return None
 
 
 def cmd_prochaine():
     graine = int.from_bytes(os.urandom(4), "big")
     rng = random.Random(graine)
-    livres = charger()
-    c = comptes(livres)
-    stars, u, liste_modes = etoiles(), usages(livres), modes()
+    gisements, tas, assemblages = charger()
+    stars = etoiles()
+    vierges = [g for g in gisements if g not in tas]
+    n_stock = len(stock(tas, assemblages))
 
     actions = []
-    if debloque(c, 1):
-        actions.append(("recenser", 1, 3.0))
-    for k in range(2, niveau_max(c) + 2):
-        if debloque(c, k):
-            actions.append(("assembler" if k == 2 else "fusionner", k, 2.0))
-    if len(liste_modes) < 15 and len(livres) >= 20:
-        actions.append(("inventer-mode", None, 0.4))
-    if not actions:
-        print("La bibliothèque est complète : aucun étage ne peut plus grandir.")
-        return
+    if len(gisements) < OBJECTIF_GISEMENTS:
+        actions.append(("prospecter", 3.0 if len(vierges) < RESERVE_BASSE else 1.0))
+    if vierges:
+        actions.append(("extraire", 3.0 if n_stock < STOCK_BAS else 1.0))
+    actions.append(("assembler", 2.0))
 
     resultat = None
     while actions and resultat is None:
-        i = rng.choices(range(len(actions)), weights=[a[2] for a in actions])[0]
-        nom, k, _ = actions.pop(i)
-        if nom == "recenser":
-            resultat = tirer_recenser(rng, livres)
-        elif nom == "assembler":
-            resultat = tirer_assembler(rng, livres, stars, u)
-        elif nom == "fusionner":
-            resultat = tirer_fusionner(rng, livres, k, stars, u, liste_modes)
+        i = rng.choices(range(len(actions)), weights=[a[1] for a in actions])[0]
+        nom, _ = actions.pop(i)
+        if nom == "prospecter":
+            resultat = tirer_prospecter(rng, gisements)
+        elif nom == "extraire":
+            resultat = tirer_extraire(rng, gisements, tas)
         else:
-            resultat = {"action": "inventer-mode", "modes_existants": sorted(liste_modes)}
+            resultat = tirer_assembler(rng, gisements, tas, assemblages, stars)
     if resultat is None:
-        resultat = tirer_recenser(rng, livres)
-
+        print("L'usine est à l'arrêt : plus rien à prospecter, extraire ou assembler.")
+        return
     resultat["graine"] = graine
     resultat["maintenant"] = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M")
     print("PROCHAINE BRIQUE — suis exactement ce tirage (voir CLAUDE.md pour le format).\n")
@@ -287,70 +215,61 @@ def cmd_prochaine():
 
 # ---------------------------------------------------------------- validation et build
 
-def valider(livres, liste_modes):
-    erreurs, avertissements = [], []
-    for lid, l in livres.items():
-        f = l.get("fichier", lid)
-        k = l.get("niveau")
-        dossier = os.path.basename(os.path.dirname(f))
-        if not isinstance(k, int) or dossier != f"n{k}":
-            erreurs.append(f"{f} : niveau {k!r} incohérent avec le dossier {dossier}")
-            continue
-        if os.path.splitext(os.path.basename(f))[0] != str(lid):
-            erreurs.append(f"{f} : le nom du fichier doit être <id>.md (id = {lid})")
-        for champ in ("id", "titre", "ajoute"):
-            if not l.get(champ):
+def valider(gisements, tas, assemblages):
+    erreurs, avert = [], []
+    for gid, g in gisements.items():
+        f = g["fichier"]
+        if g.get("id") != gid:
+            erreurs.append(f"{f} : l'id doit être le nom du fichier ({gid})")
+        for champ in ("titre", "auteurs", "annee", "genres", "ajoute"):
+            if not g.get(champ):
                 erreurs.append(f"{f} : champ `{champ}` manquant")
-        if len(l.get("texte", "")) < 200:
-            erreurs.append(f"{f} : texte trop court")
-        if k == 1:
-            p = l.get("pieces") or {}
-            manquantes = [t for t in TYPES if not p.get(t)]
-            if manquantes:
-                erreurs.append(f"{f} : pièces manquantes {manquantes}")
-            for champ in ("auteurs", "annee", "genres"):
-                if not l.get(champ):
-                    erreurs.append(f"{f} : champ `{champ}` manquant")
-            if not l.get("sources") and l.get("generation") != 0:
-                avertissements.append(f"{f} : aucune source")
-        elif k == 2:
-            r = l.get("recette") or {}
-            if "monde" not in r or len(r) != 3:
-                erreurs.append(f"{f} : la recette doit avoir 3 pièces dont un `monde`")
-            for t, s in r.items():
-                if t not in TYPES:
-                    erreurs.append(f"{f} : type de pièce inconnu `{t}`")
-                if livres.get(s, {}).get("niveau") != 1:
-                    erreurs.append(f"{f} : la pièce `{t}` vient de `{s}`, qui n'est pas un livre d'étage 1")
-            if len(set(r.values())) != len(r):
-                erreurs.append(f"{f} : les 3 pièces doivent venir de 3 mangas différents")
-        else:
-            ps = l.get("parents") or []
-            if len(ps) != 2 or len(set(ps)) != 2:
-                erreurs.append(f"{f} : il faut exactement 2 parents différents")
-            for p in ps:
-                if livres.get(p, {}).get("niveau") != k - 1:
-                    erreurs.append(f"{f} : le parent `{p}` n'est pas un livre d'étage {k - 1}")
-            if l.get("mode") not in liste_modes:
-                erreurs.append(f"{f} : mode `{l.get('mode')}` absent de recettes/modes-de-fusion.md")
-            if l.get("colonne") not in ps:
-                erreurs.append(f"{f} : `colonne` doit être l'un des deux parents")
-            if not l.get("emergence"):
-                erreurs.append(f"{f} : champ `emergence` manquant")
-            if k >= 4 and not l.get("canon"):
-                avertissements.append(f"{f} : aucune entrée de canon")
-    return erreurs, avertissements
-
-
-def cle_ordre(l):
-    return (str(l.get("ajoute", "")), l.get("niveau", 0), str(l.get("id")))
+        if len(g.get("texte", "")) < 300:
+            erreurs.append(f"{f} : résumé trop court")
+        if not g.get("sources") and g.get("generation") != 0:
+            avert.append(f"{f} : aucune source")
+    for tid, t in tas.items():
+        f = t["fichier"]
+        if t.get("gisement") != tid or tid not in gisements:
+            erreurs.append(f"{f} : doit porter le nom d'un gisement existant (champ `gisement: {tid}`)")
+        p = t.get("pieces") or {}
+        manquantes = [x for x in TYPES if not p.get(x)]
+        if manquantes:
+            erreurs.append(f"{f} : pièces manquantes {manquantes}")
+        if set(p) - set(TYPES):
+            erreurs.append(f"{f} : types de pièce inconnus {sorted(set(p) - set(TYPES))}")
+        if not t.get("extrait"):
+            erreurs.append(f"{f} : champ `extrait` manquant")
+    deja = {}
+    for aid, a in assemblages.items():
+        f = a["fichier"]
+        if a.get("id") != aid:
+            erreurs.append(f"{f} : l'id doit être le nom du fichier ({aid})")
+        for champ in ("titre", "ajoute"):
+            if not a.get(champ):
+                erreurs.append(f"{f} : champ `{champ}` manquant")
+        r = a.get("recette") or {}
+        if len(r) != 3:
+            erreurs.append(f"{f} : la recette doit consommer exactement 3 pièces")
+        if len(set(r.values())) != len(r):
+            erreurs.append(f"{f} : les 3 pièces doivent venir de 3 gisements différents")
+        for t, g in r.items():
+            if t not in TYPES:
+                erreurs.append(f"{f} : type de pièce inconnu `{t}`")
+            elif g not in tas:
+                erreurs.append(f"{f} : la pièce `{t}` de `{g}` n'a jamais été extraite")
+            elif (g, t) in deja:
+                erreurs.append(f"{f} : la pièce `{t}` de `{g}` a déjà été consommée par {deja[(g, t)]}")
+            deja[(g, t)] = aid
+        if len(a.get("texte", "")) < 300:
+            erreurs.append(f"{f} : pitch trop court")
+    return erreurs, avert
 
 
 def cmd_build():
     erreurs = []
-    livres = charger(erreurs)
-    liste_modes = modes()
-    e, a = valider(livres, liste_modes)
+    gisements, tas, assemblages = charger(erreurs)
+    e, a = valider(gisements, tas, assemblages)
     erreurs += e
     for x in a:
         print("avertissement :", x)
@@ -359,64 +278,59 @@ def cmd_build():
             print("ERREUR :", x)
         sys.exit(1)
 
-    c = comptes(livres)
-    enfants = collections.defaultdict(list)
-    for lid, l in livres.items():
-        for p in parents_de(l):
-            enfants[p].append(lid)
-    memo = {}
-    sortie = []
-    for i, l in enumerate(sorted(livres.values(), key=cle_ordre)):
-        lid = l["id"]
-        d = {k: v for k, v in l.items() if k != "fichier"}
-        d["parents"] = parents_de(l)
-        d["enfants"] = sorted(enfants.get(lid, []))
-        d["racines"] = sorted(racines(lid, livres, memo))
-        d["ordre"] = i
-        d["fichier"] = l["fichier"]
-        sortie.append(d)
+    conso = consommees(assemblages)
+    evenements = []
+    for gid, g in gisements.items():
+        evenements.append((g["ajoute"], 0, "gisement", gid))
+    for tid, t in tas.items():
+        evenements.append((t["extrait"], 1, "extraction", tid))
+    for aid, x in assemblages.items():
+        evenements.append((x["ajoute"], 2, "assemblage", aid))
+    evenements.sort()
+    ordre = {(e[2], e[3]): i for i, e in enumerate(evenements)}
 
-    etages = []
-    for k in range(1, niveau_max(c) + 2):
-        besoin = OBJECTIF_N1 if k == 1 else max(2 * (c[k] + 1), MIN_N1_POUR_N2 if k == 2 else 0)
-        etages.append({"niveau": k, "livres": c[k], "debloque": debloque(c, k),
-                       "dessous": c[k - 1] if k > 1 else None, "besoin": besoin})
+    def propre(d):
+        return {k: v for k, v in d.items() if k != "fichier"} | {"fichier": d["fichier"]}
 
-    with open(os.path.join(ROOT, "canon", "bible.md"), encoding="utf-8") as f:
-        bible = f.read()
     data = {
         "genere": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M"),
-        "etages": etages,
-        "modes": liste_modes,
-        "bible": bible,
+        "objectif": OBJECTIF_GISEMENTS,
+        "types": TYPES,
         "etoiles": sorted(etoiles()),
-        "livres": sortie,
+        "evenements": [{"type": e[2], "id": e[3], "date": e[0]} for e in evenements],
+        "gisements": [propre(g) | {"ordre": ordre[("gisement", gid)]} for gid, g in sorted(gisements.items())],
+        "tas": [propre(t) | {"ordre": ordre[("extraction", tid)],
+                             "consommees": {ty: conso.get((tid, ty)) for ty in TYPES}}
+                for tid, t in sorted(tas.items())],
+        "assemblages": [propre(x) | {"ordre": ordre[("assemblage", aid)]} for aid, x in sorted(assemblages.items())],
     }
     os.makedirs(os.path.join(ROOT, "docs"), exist_ok=True)
     with open(os.path.join(ROOT, "docs", "data.js"), "w", encoding="utf-8") as f:
-        f.write("window.BIBLIO = ")
+        f.write("window.USINE = ")
         json.dump(data, f, ensure_ascii=False, indent=1, default=str)
         f.write(";\n")
-    print(f"OK : {len(livres)} livres, docs/data.js régénéré.")
-    cmd_stats(livres)
+    print("OK : docs/data.js régénéré.")
+    cmd_stats((gisements, tas, assemblages))
 
 
-def cmd_stats(livres=None):
-    livres = livres or charger()
-    c = comptes(livres)
-    for k in range(1, niveau_max(c) + 2):
-        etat = "débloqué" if debloque(c, k) else "verrouillé"
-        print(f"  étage {k} : {c[k]:>4} livres  ({etat})")
+def cmd_stats(etat=None):
+    gisements, tas, assemblages = etat or charger()
+    s = stock(tas, assemblages)
+    par_type = collections.Counter(t for _, t in s)
+    print(f"  gisements    : {len(gisements)} / {OBJECTIF_GISEMENTS}  ({len(gisements) - len(tas)} encore vierges)")
+    print(f"  pièces brutes: {len(tas) * len(TYPES)} extraites, {len(s)} sur les tas  "
+          + "  ".join(f"{t}={par_type[t]}" for t in TYPES))
+    print(f"  assemblages  : {len(assemblages)}")
 
 
 def cmd_cherche(requete):
     q = norm(requete)
-    trouves = [l for l in charger().values()
-               if l.get("niveau") == 1 and (q in norm(l.get("titre", "")) or q in norm(l.get("id", "")))]
+    gisements, _, _ = charger()
+    trouves = [g for g in gisements.values() if q in norm(g.get("titre", "")) or q in norm(g.get("id", ""))]
     if not trouves:
-        print(f"Aucun livre d'étage 1 ne correspond à « {requete} » : la voie est libre.")
-    for l in trouves:
-        print(f"DÉJÀ EN RAYON : {l['id']} — {l['titre']} ({l.get('annee')})")
+        print(f"Aucun gisement ne correspond à « {requete} » : la voie est libre.")
+    for g in trouves:
+        print(f"DÉJÀ CONNU : {g['id']} — {g['titre']} ({g.get('annee')})")
 
 
 if __name__ == "__main__":

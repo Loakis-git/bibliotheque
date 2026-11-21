@@ -1,16 +1,9 @@
 ---
 id: vinland-saga
-niveau: 1
 titre: Vinland Saga
 auteurs: [Makoto Yukimura]
 annee: 2005
 genres: [historique, aventure, drame]
-pieces:
-  monde: Un monde de guerriers du Nord, de raids, de rois et d'esclaves.
-  heros: Un vengeur qui doit apprendre à vivre une fois sa vengeance vidée de sens.
-  mecanique: Une quête intérieure qui se joue sur des années.
-  conflit: La violence héritée contre la possibilité d'une vie paisible.
-  ton: Épique, grave, contemplatif par moments.
 sources: []
 generation: 0
 ajoute: 2026-11-21T11:30

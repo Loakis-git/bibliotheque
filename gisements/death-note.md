@@ -1,16 +1,9 @@
 ---
 id: death-note
-niveau: 1
 titre: Death Note
 auteurs: [Tsugumi Ohba, Takeshi Obata]
 annee: 2003
 genres: [thriller, surnaturel, psychologique]
-pieces:
-  monde: Un pays contemporain ordinaire, saturé de médias, de police et d'opinion publique.
-  heros: Un génie qui se croit juste et glisse vers la tyrannie.
-  mecanique: Un duel de déductions où chaque camp anticipe les pièges de l'autre.
-  conflit: Un chat et une souris qui se savent chacun traqués par l'autre.
-  ton: Tendu, froid, cérébral.
 sources: []
 generation: 0
 ajoute: 2026-11-21T11:30

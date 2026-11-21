@@ -1,16 +1,9 @@
 ---
 id: monster
-niveau: 1
 titre: Monster
 auteurs: [Naoki Urasawa]
 annee: 1994
 genres: [thriller, policier, psychologique]
-pieces:
-  monde: Une Europe d'après la chute du Mur, hantée par les expériences d'un régime disparu.
-  heros: Un homme bon rongé de remords, qui se croit responsable d'un mal.
-  mecanique: Une traque de ville en ville, où chaque témoin ouvre une piste.
-  conflit: L'enfant qu'on a sauvé, devenu un monstre.
-  ton: Noir, lent, oppressant.
 sources: []
 generation: 0
 ajoute: 2026-11-21T11:30

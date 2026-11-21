@@ -1,60 +1,63 @@
 # La Bibliothèque — règles de l'usine
 
-Ce dépôt est une bibliothèque qui grandit d'**une brique par passage** (un passage par heure, lancé par une tâche planifiée). Elle part de vrais mangas et, de fusion en fusion, converge lentement vers un seul univers.
+Ce dépôt est une usine à la Factorio. Elle grandit d'**une brique par passage** (un passage par heure, lancé par une tâche planifiée). Tu es l'ouvrier d'un passage. Tu n'as aucune mémoire des passages précédents : tout l'état est dans ce dépôt.
 
-Tu es l'ouvrier d'un passage. Tu n'as aucune mémoire des passages précédents : tout l'état est dans ce dépôt.
+## La chaîne de production
 
-## Les étages
-
-| Étage | Dossier | Ce que c'est | Fabriqué à partir de |
+| Maillon | Dossier | Équivalent Factorio | Ce que c'est |
 |---|---|---|---|
-| 1 | `livres/n1/` | Résumé d'un **vrai** manga + son démontage en 5 pièces | Le monde réel (recherche web) |
-| 2 | `livres/n2/` | **Pitch** d'une série originale | 3 pièces venant de 3 mangas différents de l'étage 1 |
-| 3, 4, 5… | `livres/nK/` | **Fusion** de deux livres de l'étage du dessous | 2 livres de l'étage K-1 + un mode de fusion |
+| Gisement | `gisements/` | Le gisement de minerai sur la carte | Un **vrai** manga : sa fiche et son résumé. Objectif : 500 gisements. |
+| Pièces brutes | `tas/` | Le minerai qui sort de l'extracteur | Les 5 pièces extraites d'un gisement : `monde`, `heros`, `mecanique`, `conflit`, `ton`. **Rien de nouveau** : on prélève seulement ce qui est dans l'œuvre. |
+| Assemblage | `assemblages/` | Le produit qui sort de l'assembleur | Une **œuvre originale de niveau 2**, fabriquée à partir de 3 pièces venant de 3 gisements différents. |
 
-**Règle de déblocage (le ratio Factorio)** : on ne peut écrire un nouveau livre à l'étage K+1 que si l'étage K contient au moins `2 × (livres à l'étage K+1 + 1)` livres. Plus on monte, plus c'est rare. Le script applique cette règle pour toi.
+**Les pièces se consomment.** Une pièce utilisée par un assemblage quitte le tas et ne peut plus servir. Chaque gisement donne ses 5 pièces une seule fois. L'usine doit donc sans cesse prospecter et extraire pour alimenter les assembleurs. Le script calcule le stock à partir des recettes des assemblages : il n'y a rien à cocher à la main.
 
-## Déroulé d'un passage — une seule brique, toujours
+Il n'existe pas encore de niveau au-dessus des assemblages. Les essais de niveaux 3 et 4 sont rangés dans `archives/`. Ne les utilise pas et n'y touche pas.
 
-1. `python3 scripts/usine.py prochaine` — le script tire au sort l'action et impose l'identifiant, les parents, les pièces et le mode de fusion. **Tu ne choisis jamais toi-même les parents, les pièces ou le mode** : le hasard vient du script, pas de toi. C'est ce qui empêche la bibliothèque de tourner autour des mêmes goûts.
-2. Lis les fichiers que le script te désigne (les parents, et `canon/bible.md` à partir de l'étage 4).
-3. Écris **un seul** nouveau fichier, au format décrit plus bas (ou, pour l'action `inventer-mode`, ajoute un mode dans `recettes/modes-de-fusion.md`).
-4. `python3 scripts/usine.py build` — valide toute la bibliothèque et régénère `docs/data.js` (la visualisation). S'il signale une erreur, corrige ton fichier et relance.
+## Déroulé d'un passage : une seule brique, toujours
+
+1. `python3 scripts/usine.py prochaine` : le script tire au sort l'action selon les besoins de l'usine. Il impose le gisement à extraire, ou les 3 pièces à assembler. **Tu ne choisis jamais toi-même le gisement à extraire ni les pièces à assembler.** C'est ce qui empêche l'usine de tourner autour des mêmes goûts.
+2. Lis les fichiers que le script te désigne.
+3. Écris **un seul** nouveau fichier, au format décrit plus bas.
+4. `python3 scripts/usine.py build` : il valide l'usine et régénère `docs/data.js` (la visualisation). S'il signale une erreur, corrige ton fichier et relance.
 5. Ajoute une ligne en bas de `journal.md` : `- AAAA-MM-JJ HH:MM · action · id · titre`.
 6. Commit et push sur `main` :
-   - message : `N2 · Le Joueur de brume (n2-0001)` (étage, titre, id) ;
+   - message : `Prospection · Akira (akira)`, `Extraction · Akira (akira)` ou `Assemblage · Le Joueur de brume (n2-0004)` ;
    - si le push est rejeté : `git pull --rebase origin main`, relance `build`, puis push.
 
-Ne modifie **jamais** un livre existant (sauf pour réparer une erreur de format signalée par `build`). La bibliothèque ne fait que grandir.
+Ne modifie **jamais** un fichier existant de `gisements/`, `tas/` ou `assemblages/` (sauf pour réparer une erreur de format signalée par `build`). L'usine ne fait que grandir.
 
-## Les actions
+## Les trois actions
 
-### `recenser` — étage 1
+### `prospecter` : découvrir un gisement
 
-- Le script te donne une **cible** (un genre ou une décennie sous-représentés). Choisis un vrai manga publié qui correspond à la cible et qui n'est pas déjà en rayon : vérifie avec `python3 scripts/usine.py cherche "titre"`.
-- Varie : mangas connus et confidentiels, toutes époques, tous publics (shōnen, seinen, shōjo, josei, kodomo), auteurs différents.
-- Vérifie les faits (auteurs, année de début, prémisse) par une recherche web et mets 1 à 3 URL dans `sources`.
-- Résumé de 150 à 250 mots, **écrit avec tes propres mots** : la prémisse, les grandes lignes, ce qui rend l'œuvre singulière. Aucun dialogue recopié, aucune image.
-- Démontage en 5 pièces : `monde`, `heros`, `mecanique`, `conflit`, `ton`. Chaque pièce fait une phrase courte (15 mots maximum), **sans nom propre**, assez générique pour pouvoir être greffée dans une autre histoire.
+- Le script te donne une **cible** : un genre ou une décennie sous-représentés. Choisis un vrai manga publié qui correspond à la cible et qui n'est pas encore un gisement. Vérifie avec `python3 scripts/usine.py cherche "titre"`.
+- Varie les gisements : mangas connus et confidentiels, toutes époques, tous publics (shōnen, seinen, shōjo, josei, kodomo), auteurs différents.
+- Vérifie les faits (auteurs, année de début, prémisse) par une recherche web, et mets 1 à 3 URL dans `sources`.
+- Écris un résumé de 150 à 250 mots **avec tes propres mots** : la prémisse, les grandes lignes, ce qui rend l'œuvre singulière. Aucun dialogue recopié, aucune image.
+- Pas de pièces dans ce passage : l'extraction est une autre brique.
 
-### `assembler` — étage 2
+### `extraire` : sortir les pièces brutes d'un gisement
 
-- Le script impose 3 pièces venant de 3 mangas différents (toujours un `monde` + deux autres types).
-- Écris le pitch d'une série **originale** de 250 à 400 mots : une accroche d'une phrase en italique, le pitch, 2 à 4 personnages inventés, et ce qui rend la série unique.
-- Les pièces sont de la matière première à transformer, pas à recopier : aucun nom de personnage, de lieu inventé ou de terme propre aux œuvres sources.
+- Le script désigne le gisement. Lis son résumé, et fais une recherche web si tu as besoin de préciser un élément.
+- Écris ses 5 pièces. Chacune décrit fidèlement un élément **présent dans l'œuvre**. Tu n'inventes rien, tu n'interprètes pas, tu ne combines pas.
+  - `monde` : le cadre, l'univers, la société.
+  - `heros` : la figure du protagoniste.
+  - `mecanique` : le moteur du récit, ce qui se répète de chapitre en chapitre.
+  - `conflit` : l'opposition centrale.
+  - `ton` : l'atmosphère, le registre.
+- Chaque pièce fait une phrase courte (15 mots maximum), **sans nom propre**, pour pouvoir être reprise ailleurs comme matière première.
 
-### `fusionner` — étages 3 et plus
+### `assembler` : fabriquer une œuvre de niveau 2
 
-- Le script impose 2 parents de l'étage du dessous et un mode de fusion (défini dans `recettes/modes-de-fusion.md`).
-- **Une colonne vertébrale** : choisis lequel des deux parents porte l'histoire (champ `colonne`) ; l'autre vient la transformer. Mélanger à parts égales donne une moyenne fade.
-- **Une émergence obligatoire** : la fusion doit contenir au moins une idée qui n'existait dans aucun des deux parents. Résume-la en une phrase dans le champ `emergence`. C'est le signe que l'étage a produit quelque chose de neuf.
-- Longueur : 400 à 600 mots à l'étage 3, 600 à 900 à l'étage 4, 800 à 1 200 au-delà.
-- **À partir de l'étage 4** : lis `canon/bible.md`. Respecte ses lois, ou, si tu en contredis une, fais-le explicitement dans l'histoire et explique-le. Ajoute 1 à 3 entrées à la bible (loi, lieu, époque ou entité), chacune suivie de `(source : <id>)`, et liste-les dans le champ `canon` du livre. C'est comme ça que l'univers commun se construit.
-
-### `inventer-mode`
-
-- Ajoute un nouveau mode de fusion à `recettes/modes-de-fusion.md` : un titre `## nom-du-mode` (en minuscules, avec des tirets), une définition en une phrase, et un exemple en deux phrases. Il doit être vraiment différent des modes existants.
-- Pas de nouveau livre pendant ce passage. Commit : `Mode · nom-du-mode`.
+- Le script impose 3 pièces de 3 types différents, venant de 3 gisements différents. Elles sont consommées par ton assemblage.
+- Écris le pitch d'une série **originale** de 250 à 400 mots :
+  - une accroche d'une phrase en italique ;
+  - le pitch ;
+  - 2 à 4 personnages inventés ;
+  - ce qui rend la série unique.
+- Les 3 pièces sont la matière première : chacune doit être reconnaissable dans le pitch, mais transformée. Pour les types qui ne sont pas fournis, invente librement.
+- Ne reprends aucun nom de personnage, de lieu ou de terme propre aux œuvres d'origine.
 
 ## Principes d'écriture (contre la moyenne)
 
@@ -66,63 +69,49 @@ Ne modifie **jamais** un livre existant (sauf pour réparer une erreur de format
 
 ## Formats
 
-Chaque livre est un fichier Markdown avec un en-tête YAML. Les ids sont donnés par le script.
-
-**Étage 1** — `livres/n1/<slug>.md`
+**Gisement** : `gisements/<slug>.md` (le slug est tiré du titre : minuscules, tirets, sans accents)
 ```yaml
 ---
-id: death-note            # slug du titre
-niveau: 1
+id: death-note
 titre: Death Note
 auteurs: [Tsugumi Ohba, Takeshi Obata]
 annee: 2003               # année de début de publication
 genres: [thriller, surnaturel]
-pieces:
-  monde: ...
-  heros: ...
-  mecanique: ...
-  conflit: ...
-  ton: ...
 sources: [https://...]
 ajoute: 2026-11-21T11:00
 ---
 Résumé…
 ```
 
-**Étage 2** — `livres/n2/<id>.md`
+**Pièces brutes** : `tas/<slug>.yaml` (même slug que le gisement)
+```yaml
+gisement: death-note
+extrait: '2026-11-21T12:00'
+pieces:
+  monde: ...
+  heros: ...
+  mecanique: ...
+  conflit: ...
+  ton: ...
+```
+
+**Assemblage** : `assemblages/<id>.md` (l'id est donné par le script)
 ```yaml
 ---
 id: n2-0004
-niveau: 2
 titre: ...
-recette:                  # type de pièce → id du livre d'étage 1 d'où elle vient
+recette:                  # type de pièce → gisement d'où elle vient
   monde: mushishi
   heros: hikaru-no-go
   mecanique: kaiji
-ajoute: 2026-11-21T12:00
+ajoute: 2026-11-21T13:00
 ---
 *Accroche.*
 
 Pitch…
 ```
 
-**Étages 3 et plus** — `livres/nK/<id>.md`
-```yaml
----
-id: n3-0004
-niveau: 3
-titre: ...
-mode: greffe
-parents: [n2-0001, n2-0003]
-colonne: n2-0003
-emergence: Une phrase sur l'idée nouvelle.
-canon: []                 # entrées ajoutées à la bible (étage 4 et plus)
-ajoute: 2026-11-21T13:00
----
-Texte…
-```
-
 ## Ce que tu ne touches pas
 
-- `etoiles.txt` : c'est le propriétaire de la bibliothèque qui y met les ids des livres qu'il aime (le script les tire alors plus souvent comme parents).
-- Les scripts et la visualisation (`scripts/`, `docs/index.html`), sauf si le propriétaire le demande.
+- `etoiles.txt` : le propriétaire y met les gisements qu'il aime. Leurs pièces sont alors tirées plus souvent.
+- `archives/`, les scripts et la visualisation (`scripts/`, `docs/index.html`), sauf si le propriétaire le demande.

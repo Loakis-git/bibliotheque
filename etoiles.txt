@@ -1,2 +1,2 @@
-# Un id de livre par ligne. Les livres étoilés sont tirés 3 fois plus souvent comme parents.
-# Exemple : n2-0002
+# Un id de gisement par ligne. Ses pièces seront tirées 3 fois plus souvent lors des assemblages.
+# Exemple : mushishi

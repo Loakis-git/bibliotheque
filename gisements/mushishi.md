@@ -1,16 +1,9 @@
 ---
 id: mushishi
-niveau: 1
 titre: Mushishi
 auteurs: [Yuki Urushibara]
 annee: 1999
 genres: [fantastique, contemplatif, surnaturel]
-pieces:
-  monde: Une campagne hors du temps, peuplée de formes de vie primitives et invisibles.
-  heros: Un voyageur détaché, qui comprend la nature mieux que les hommes.
-  mecanique: Une rencontre par chapitre, un mystère local à démêler puis à quitter.
-  conflit: Les humains contre une nature qui n'est ni bonne ni mauvaise.
-  ton: Contemplatif, mélancolique, apaisé.
 sources: []
 generation: 0
 ajoute: 2026-11-21T11:30

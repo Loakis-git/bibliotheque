@@ -1,16 +1,9 @@
 ---
 id: planetes
-niveau: 1
 titre: Planetes
 auteurs: [Makoto Yukimura]
 annee: 1999
 genres: [science-fiction, drame, travail]
-pieces:
-  monde: L'orbite proche d'une humanité qui commence à peine à habiter l'espace.
-  heros: Un ouvrier désabusé qui rêve encore, sans oser le dire.
-  mecanique: Le quotidien d'un métier ingrat, mission après mission.
-  conflit: Le rêve contre la réalité, l'ambition contre les liens.
-  ton: Mélancolique, réaliste, parfois lumineux.
 sources: []
 generation: 0
 ajoute: 2026-11-21T11:30

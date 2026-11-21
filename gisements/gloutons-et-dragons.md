@@ -1,16 +1,9 @@
 ---
 id: gloutons-et-dragons
-niveau: 1
 titre: Gloutons & Dragons
 auteurs: [Ryoko Kui]
 annee: 2014
 genres: [fantasy, cuisine, comédie]
-pieces:
-  monde: Un donjon qui obéit à une véritable écologie, avec ses chaînes alimentaires.
-  heros: Un groupe de bras cassés, chacun excellent dans un domaine étroit.
-  mecanique: Cuisiner ce qu'on affronte pour pouvoir continuer d'avancer.
-  conflit: La survie, et le prix de ce qu'on est prêt à faire pour sauver un proche.
-  ton: Gourmand, drôle, curieux, plus grave qu'il n'y paraît.
 sources: []
 generation: 0
 ajoute: 2026-11-21T11:30

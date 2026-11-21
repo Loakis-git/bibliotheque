@@ -1,16 +1,9 @@
 ---
 id: yotsuba
-niveau: 1
 titre: Yotsuba&!
 auteurs: [Kiyohiko Azuma]
 annee: 2003
 genres: [tranche de vie, comédie]
-pieces:
-  monde: Le quotidien paisible d'une banlieue ordinaire, avec ses voisins et ses saisons.
-  heros: Une enfant curieuse de tout, qui découvre le monde sans aucun filtre.
-  mecanique: Une petite découverte par chapitre, vécue comme un événement immense.
-  conflit: Presque aucun ; seulement les malentendus d'une enfant face au monde des adultes.
-  ton: Doux, drôle, émerveillé.
 sources: []
 generation: 0
 ajoute: 2026-11-21T11:30

@@ -2,4 +2,5 @@
 
 Une ligne par passage : `- date · action · id · titre`.
 
-- 2026-11-21 11:30 · génération zéro · 10 × n1, 3 × n2, 3 × n3, 1 × n4 · écrite à la main pendant la conception du projet
+- 2026-11-21 11:30 · génération zéro · 10 gisements, 10 extractions, 3 assemblages · écrits à la main pendant la conception du projet
+- 2026-11-21 11:50 · refonte · gisements → pièces brutes → assemblages ; niveaux 3 et 4 archivés

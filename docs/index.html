@@ -3,249 +3,244 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>La Bibliothèque</title>
+<title>La Bibliothèque — l'usine</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --nuit: #17120e; --mur: #211a14; --bois: #5b3c25; --bois-clair: #7a5234; --bois-sombre: #3a2616;
-    --papier: #efe4cf; --encre: #e9dcc3; --encre-douce: #b5a487; --encre-pale: #7d6f5a; --or: #d6a546;
-    --serif: "Cormorant Garamond", Georgia, serif; --sans: Inter, system-ui, sans-serif;
+    --sol: #1a1a19; --dalle: #232321; --panneau: #2e2d2b; --bord-sombre: #121211;
+    --texte: #e8e3d8; --doux: #aaa397; --pale: #6f6a61; --orange: #f2a33a;
+    --monde: #8fa6bd; --heros: #d07a3e; --mecanique: #5a5a5a; --conflit: #b8a37c; --ton: #7dbd4c;
+    --ui: "Titillium Web", system-ui, sans-serif; --lecture: "Source Serif 4", Georgia, serif;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--nuit); color: var(--encre); font-family: var(--sans); font-size: 15px; line-height: 1.6; }
-  header { padding: 40px 32px 20px; max-width: 1400px; margin: 0 auto; }
-  h1 { font-family: var(--serif); font-weight: 600; font-size: 52px; line-height: 1; margin: 0 0 8px; letter-spacing: .01em; }
-  .sous-titre { color: var(--encre-douce); max-width: 720px; margin: 0; }
-  .barre { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; margin-top: 24px; }
-  .compteurs { display: flex; gap: 8px; flex-wrap: wrap; }
-  .compteur { border: 1px solid #3b2f24; border-radius: 999px; padding: 3px 12px; font-size: 13px; color: var(--encre-douce); }
-  .compteur b { color: var(--encre); font-weight: 500; }
-  .temps { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 260px; font-size: 13px; color: var(--encre-douce); }
-  .temps input { flex: 1; accent-color: var(--or); }
-  button { font: inherit; font-size: 13px; background: transparent; color: var(--encre); border: 1px solid #4a3b2d; border-radius: 6px; padding: 5px 12px; cursor: pointer; }
-  button:hover { border-color: var(--or); color: var(--or); }
-  main { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 28px; padding: 0 32px 60px; max-width: 1400px; margin: 0 auto; }
-  @media (max-width: 960px) { main { grid-template-columns: 1fr; } header { padding: 28px 18px 16px; } main { padding: 0 18px 40px; } h1 { font-size: 40px; } }
-  #batiment { align-self: start; position: relative; background: var(--mur); border: 1px solid #33281e; border-radius: 4px; padding: 8px 0; }
-  #liens { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
-  .etage { display: grid; grid-template-columns: 150px 1fr; border-bottom: 1px solid #2c231b; }
-  .etage:last-child { border-bottom: 0; }
-  .plaque { padding: 18px 16px; border-right: 1px solid #2c231b; }
-  .plaque .num { font-family: var(--serif); font-size: 26px; font-weight: 600; line-height: 1; }
-  .plaque .nom { font-size: 12px; color: var(--encre-douce); text-transform: uppercase; letter-spacing: .08em; margin-top: 4px; }
-  .plaque .nb { font-size: 12px; color: var(--encre-pale); margin-top: 8px; }
-  .rayon { padding: 12px 14px 0; display: flex; flex-wrap: wrap; align-content: flex-start;
-    background: repeating-linear-gradient(to bottom, transparent 0 116px, var(--bois) 116px 124px, var(--bois-sombre) 124px 128px); min-height: 128px; }
-  .case { height: 116px; margin-bottom: 12px; display: flex; align-items: flex-end; }
-  .dos { position: relative; margin-right: 2px; border-radius: 2px 2px 0 0; cursor: pointer; overflow: hidden;
-    box-shadow: inset -2px 0 0 rgba(0,0,0,.25), inset 2px 0 0 rgba(255,255,255,.08); transition: transform .15s, opacity .2s; }
-  .dos:hover { transform: translateY(-6px); }
-  .dos span { position: absolute; inset: 6px 0; writing-mode: vertical-rl; transform: rotate(180deg); font-family: var(--serif);
-    font-size: 12.5px; font-weight: 600; color: rgba(255,250,240,.92); text-shadow: 0 1px 1px rgba(0,0,0,.4); white-space: nowrap; overflow: hidden;
-    text-overflow: ellipsis; display: block; text-align: left; line-height: 1; padding-top: 2px; }
-  .dos.haut::before, .dos.haut::after { content: ""; position: absolute; left: 0; right: 0; height: 3px; background: var(--or); opacity: .85; }
-  .dos.haut::before { top: 10px; } .dos.haut::after { bottom: 10px; }
-  .dos.etoile span::after { content: " ★"; color: var(--or); }
-  .dos.choisi { outline: 2px solid var(--or); outline-offset: 2px; transform: translateY(-8px); }
-  .attenue .dos:not(.lie) { opacity: .18; }
-  .verrou { color: var(--encre-pale); font-size: 13px; padding: 30px 18px; display: flex; align-items: center; min-height: 128px;
-    background: repeating-linear-gradient(135deg, transparent 0 10px, rgba(255,255,255,.015) 10px 20px); }
-  .verrou .jauge { height: 4px; background: #2c231b; border-radius: 2px; margin-top: 8px; width: 220px; overflow: hidden; }
-  .verrou .jauge i { display: block; height: 100%; background: var(--encre-pale); }
-  aside { position: sticky; top: 16px; align-self: start; max-height: calc(100vh - 32px); overflow: auto;
-    background: var(--papier); color: #2b2118; border-radius: 4px; padding: 26px 26px 30px; }
-  aside h2 { font-family: var(--serif); font-size: 32px; line-height: 1.05; font-weight: 600; margin: 4px 0 10px; }
-  aside h3 { font-family: var(--serif); font-size: 21px; font-weight: 600; margin: 22px 0 6px; }
-  aside .meta { font-size: 13px; color: #6c5a45; margin-bottom: 14px; }
-  aside .badge { display: inline-block; font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: #8a6420; }
-  aside .emergence { border-left: 3px solid var(--or); padding: 4px 0 4px 12px; font-family: var(--serif); font-style: italic; font-size: 18px; line-height: 1.4; margin: 14px 0; }
+  body { margin: 0; background: var(--sol); color: var(--texte); font-family: var(--ui); font-size: 15px; line-height: 1.5;
+    background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size: 32px 32px; }
+  header { max-width: 1440px; margin: 0 auto; padding: 32px 28px 16px; }
+  h1 { font-size: 40px; font-weight: 700; margin: 0; letter-spacing: .01em; line-height: 1.1; }
+  h1 small { font-size: 16px; font-weight: 400; color: var(--doux); margin-left: 10px; }
+  .barre { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; margin-top: 18px; }
+  .compteur { font-size: 14px; color: var(--doux); } .compteur b { color: var(--texte); font-size: 18px; font-weight: 600; margin-right: 4px; }
+  .temps { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 280px; color: var(--doux); font-size: 13px; }
+  .temps input { flex: 1; accent-color: var(--orange); }
+  button { font: 600 13px var(--ui); color: var(--texte); background: #3c3b38; border: 1px solid var(--bord-sombre); border-radius: 3px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.12); padding: 5px 14px; cursor: pointer; }
+  button:hover { background: var(--orange); color: #1a1a19; }
+  main { max-width: 1440px; margin: 0 auto; padding: 0 28px 48px; display: grid; grid-template-columns: minmax(0, 1fr) 390px; gap: 22px; align-items: start; }
+  @media (max-width: 980px) { main { grid-template-columns: 1fr; padding: 0 14px 40px; } header { padding: 24px 14px 12px; } }
+  .zone { background: var(--panneau); border: 1px solid var(--bord-sombre); box-shadow: inset 0 1px 0 rgba(255,255,255,.07); border-radius: 4px; padding: 14px 16px 16px; }
+  .zone h2 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; margin: 0 0 4px; display: flex; justify-content: space-between; gap: 12px; }
+  .zone h2 span { color: var(--doux); font-weight: 400; letter-spacing: .04em; text-transform: none; }
+  .zone .aide { color: var(--pale); font-size: 13px; margin: 0 0 12px; }
+  .convoyeur { height: 26px; margin: 0 40px; position: relative; display: flex; align-items: center; justify-content: center;
+    background: repeating-linear-gradient(90deg, #3a3326 0 8px, #2a251c 8px 16px); border-left: 4px solid #575044; border-right: 4px solid #575044; }
+  .convoyeur span { background: var(--sol); padding: 0 10px; font-size: 12px; color: var(--doux); text-transform: uppercase; letter-spacing: .12em; position: relative; }
+  @media (prefers-reduced-motion: no-preference) { .convoyeur { animation: tapis 1.2s linear infinite; } }
+  @keyframes tapis { to { background-position: 16px 0; } }
+  .gisements { display: grid; grid-template-columns: repeat(auto-fill, minmax(42px, 1fr)); gap: 4px; }
+  .gis { aspect-ratio: 1; border-radius: 3px; cursor: pointer; position: relative; border: 1px solid rgba(0,0,0,.5);
+    background-color: var(--c); transition: transform .12s, opacity .2s;
+    background-image: radial-gradient(circle at 25% 30%, rgba(255,255,255,.55) 0 2.5px, transparent 3px), radial-gradient(circle at 70% 60%, rgba(255,255,255,.45) 0 3px, transparent 3.5px),
+      radial-gradient(circle at 40% 78%, rgba(255,255,255,.35) 0 2px, transparent 2.5px), radial-gradient(circle at 78% 22%, rgba(0,0,0,.35) 0 3px, transparent 3.5px); }
+  .gis.extrait { background-color: #2a2826; background-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,.45) 0 34%, transparent 36%); border-style: dashed; border-color: #4a4640; }
+  .gis:hover { transform: scale(1.12); z-index: 2; }
+  .tas { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 640px) { .tas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .pile { background: var(--dalle); border: 1px solid var(--bord-sombre); border-radius: 3px; padding: 10px; min-height: 140px; display: flex; flex-direction: column; }
+  .pile h3 { margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; display: flex; align-items: center; gap: 6px; }
+  .pile h3 i { width: 12px; height: 12px; border-radius: 2px; background: var(--c); display: inline-block; box-shadow: inset 0 0 0 1px rgba(0,0,0,.4); }
+  .pile .nb { font-size: 12px; color: var(--pale); margin-bottom: 8px; }
+  .items { display: flex; flex-wrap: wrap-reverse; align-content: flex-start; gap: 3px; margin-top: auto; }
+  .item { width: 14px; height: 14px; border-radius: 2px; background: var(--c); cursor: pointer; transition: transform .12s, opacity .2s;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset 0 -2px 0 rgba(0,0,0,.35); }
+  .item:hover { transform: scale(1.4); }
+  .produits { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+  .produit { background: var(--dalle); border: 1px solid var(--bord-sombre); border-left: 3px solid var(--orange); border-radius: 3px; padding: 8px 10px; cursor: pointer; transition: opacity .2s, border-color .2s; }
+  .produit:hover { border-color: var(--orange); }
+  .produit .t { font-weight: 600; font-size: 14px; line-height: 1.25; }
+  .produit .id { font-size: 11px; color: var(--pale); }
+  .pips { display: flex; gap: 3px; margin-top: 6px; } .pips i { width: 12px; height: 12px; border-radius: 2px; background: var(--c); box-shadow: inset 0 -2px 0 rgba(0,0,0,.3); }
+  .attenue .gis:not(.lie), .attenue .item:not(.lie), .attenue .produit:not(.lie) { opacity: .15; }
+  .choisi { outline: 2px solid var(--orange); outline-offset: 2px; }
+  .vide-zone { color: var(--pale); font-size: 13px; font-style: italic; }
+  aside { position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow: auto; background: #ece5d6; color: #2a241c; border-radius: 4px; padding: 22px 24px 26px; border: 1px solid var(--bord-sombre); }
+  aside .badge { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #a05f12; }
+  aside h2 { font-family: var(--lecture); font-weight: 600; font-size: 28px; line-height: 1.1; margin: 4px 0 8px; }
+  aside h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; margin: 20px 0 8px; color: #6b5c48; }
+  aside .meta { font-size: 13px; color: #6b5c48; margin-bottom: 12px; }
+  aside .texte { font-family: var(--lecture); font-size: 15.5px; line-height: 1.6; }
   aside .texte p { margin: 0 0 12px; } aside .texte ul { padding-left: 18px; margin: 0 0 12px; }
-  aside .pieces { font-size: 13px; display: grid; grid-template-columns: 90px 1fr; gap: 4px 10px; margin: 10px 0 14px; }
-  aside .pieces dt { color: #8a6420; text-transform: uppercase; font-size: 11px; letter-spacing: .08em; padding-top: 2px; }
-  aside .pieces dd { margin: 0; }
-  .puces { display: flex; flex-wrap: wrap; gap: 6px; }
-  .puce { font-size: 12px; border: 1px solid #c9b48f; background: #f7efdf; border-radius: 999px; padding: 2px 10px; cursor: pointer; }
-  .puce:hover { border-color: #8a6420; }
-  .vide { color: #6c5a45; font-family: var(--serif); font-style: italic; font-size: 19px; line-height: 1.45; }
-  #bible { display: none; max-width: 1400px; margin: 0 auto 24px; padding: 0 32px; }
-  #bible.ouvert { display: block; }
-  #bible .page { background: var(--papier); color: #2b2118; border-radius: 4px; padding: 24px 30px; columns: 2 340px; column-gap: 40px; }
-  #bible h1 { display: none; } #bible h2 { font-family: var(--serif); font-size: 22px; margin: 0 0 6px; break-after: avoid; }
-  #bible p, #bible ul { margin: 0 0 14px; font-size: 14px; } #bible ul { padding-left: 18px; }
-  footer { text-align: center; color: var(--encre-pale); font-size: 12px; padding-bottom: 30px; }
+  .ligne-piece { display: grid; grid-template-columns: 14px 1fr; gap: 10px; padding: 7px 0; border-top: 1px solid #d8ccb5; font-size: 14px; cursor: pointer; }
+  .ligne-piece:first-of-type { border-top: 0; }
+  .ligne-piece i { width: 14px; height: 14px; border-radius: 2px; background: var(--c); margin-top: 3px; }
+  .ligne-piece small { display: block; color: #8a7a62; font-size: 12px; }
+  .ligne-piece.mangee { opacity: .6; }
+  .lien { color: #a05f12; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+  .accueil { font-family: var(--lecture); font-style: italic; color: #5d5040; font-size: 17px; margin: 0; }
+  footer { text-align: center; color: var(--pale); font-size: 12px; padding-bottom: 28px; }
 </style>
 </head>
 <body>
 <header>
-  <h1>La Bibliothèque</h1>
-  <p class="sous-titre">Une brique par heure. Au rez-de-chaussée, de vrais mangas démontés en pièces ; au-dessus, des séries inventées qui fusionnent étage après étage, jusqu'à converger vers un seul univers.</p>
+  <h1>La Bibliothèque <small>usine à œuvres</small></h1>
   <div class="barre">
-    <div class="compteurs" id="compteurs"></div>
+    <span class="compteur" id="c-gis"></span>
+    <span class="compteur" id="c-tas"></span>
+    <span class="compteur" id="c-ass"></span>
     <div class="temps">
-      <button id="lecture" aria-label="Rejouer la construction">▶ Timelapse</button>
-      <input type="range" id="curseur" min="0" value="0" aria-label="Moment de la construction">
+      <button id="lecture">▶ Timelapse</button>
+      <input type="range" id="curseur" min="0" aria-label="Moment de la construction">
       <span id="date"></span>
     </div>
-    <button id="btn-bible">Bible de l'univers</button>
   </div>
 </header>
-<section id="bible"><div class="page" id="bible-page"></div></section>
 <main>
-  <div id="batiment"><svg id="liens"></svg><div id="etages"></div></div>
-  <aside id="fiche"><p class="vide">Choisis un livre sur les étagères pour l'ouvrir. Ses ancêtres et ses descendants s'éclairent, les autres s'effacent.</p></aside>
+  <div>
+    <section class="zone">
+      <h2>Gisements <span id="t-gis"></span></h2>
+      <p class="aide">De vrais mangas. Plein : gisement vierge. Cratère : déjà extrait.</p>
+      <div class="gisements" id="gisements"></div>
+    </section>
+    <div class="convoyeur"><span>extraction</span></div>
+    <section class="zone">
+      <h2>Pièces brutes <span id="t-tas"></span></h2>
+      <p class="aide">Chaque carré est une pièce sortie d'un gisement, en attente d'être assemblée.</p>
+      <div class="tas" id="tas"></div>
+    </section>
+    <div class="convoyeur"><span>assemblage</span></div>
+    <section class="zone">
+      <h2>Assemblages · niveau 2 <span id="t-ass"></span></h2>
+      <p class="aide">Des œuvres originales, chacune fabriquée avec 3 pièces de 3 gisements.</p>
+      <div class="produits" id="produits"></div>
+    </section>
+  </div>
+  <aside id="fiche"><p class="accueil">Clique sur un gisement, une pièce ou un assemblage pour voir d'où il vient et ce qu'il est devenu.</p></aside>
 </main>
 <footer id="pied"></footer>
 <script src="data.js"></script>
 <script>
-const B = window.BIBLIO;
-const livres = B.livres;
-const parId = Object.fromEntries(livres.map(l => [l.id, l]));
-const etoiles = new Set(B.etoiles);
-const NOMS = { 1: "Mangas réels", 2: "Pitchs", 3: "Fusions" };
-const nomEtage = k => NOMS[k] || "Fusions profondes";
-
-const PALETTE = {
-  "thriller": "#7b2d2d", "policier": "#5e3a4a", "psychologique": "#6a3d5c", "surnaturel": "#4b3f7a",
-  "fantastique": "#3e5a78", "contemplatif": "#3f6b68", "fantasy": "#2f6a52", "aventure": "#8a5a24",
-  "science-fiction": "#2d5d7c", "post-apocalyptique": "#6e6a2e", "historique": "#7a4a2a", "drame": "#5a4636",
-  "jeu": "#9a4a1e", "sport": "#a0611f", "cuisine": "#8f6d1f", "comédie": "#9a7a2a", "tranche de vie": "#5f7a3a",
-  "travail": "#4e5d66", "romance": "#8a3e57", "horreur": "#3d2a2a", "mecha": "#4a5560", "musique": "#6a4a7a",
-  "mystère": "#3d4a66", "action": "#8c3a24", "école": "#5a6e3e", "guerre": "#5c4a3a",
-};
-function hash(s) { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; }
-function couleurGenre(g) { if (PALETTE[g]) return PALETTE[g]; const h = hash(g) % 360; return `hsl(${h} 35% 34%)`; }
-function hex2rgb(c) {
-  if (c.startsWith("hsl")) { const d = document.createElement("div"); d.style.color = c; document.body.appendChild(d);
-    const m = getComputedStyle(d).color.match(/\d+/g).map(Number); d.remove(); return m; }
-  return [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16));
-}
-const couleurs = {};
-for (const l of livres) if (l.niveau === 1) couleurs[l.id] = hex2rgb(couleurGenre((l.genres || ["drame"])[0]));
-function couleur(l) {
-  const rs = (l.racines || []).map(r => couleurs[r]).filter(Boolean);
-  if (!rs.length) return "rgb(90,70,54)";
-  const m = [0, 1, 2].map(i => Math.round(rs.reduce((s, c) => s + c[i], 0) / rs.length));
-  return `rgb(${m.join(",")})`;
-}
-
+const U = window.USINE;
+const TYPES = U.types;
+const NOM = { monde: "Monde", heros: "Héros", mecanique: "Mécanique", conflit: "Conflit", ton: "Ton" };
+const gis = Object.fromEntries(U.gisements.map(g => [g.id, g]));
+const tas = Object.fromEntries(U.tas.map(t => [t.gisement, t]));
+const ass = Object.fromEntries(U.assemblages.map(a => [a.id, a]));
+const PALETTE = ["#7a4fa0", "#3f7fa8", "#a8503f", "#4f9a6a", "#a8873f", "#8a3f6a", "#3f9a96", "#6a7a3f", "#a86a3f", "#5a5fa8"];
+const hash = s => { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; };
+const couleurGis = g => PALETTE[hash((g.genres || ["?"])[0]) % PALETTE.length];
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const md = t => {
-  const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  const inl = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\*(.+?)\*/g, "<i>$1</i>").replace(/`(.+?)`/g, "<code>$1</code>").replace(/ ([?!:;»])/g, "\u00a0$1").replace(/« /g, "«\u00a0");
+  const inl = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\*(.+?)\*/g, "<i>$1</i>").replace(/ ([?!:;»])/g, " $1").replace(/« /g, "« ");
   return t.split(/\n{2,}/).map(b => {
-    b = b.trim(); if (!b) return "";
-    const h = b.match(/^(#{1,3})\s+(.*)$/); if (h && !b.includes("\n")) return `<h${h[1].length + 1}>${inl(h[2])}</h${h[1].length + 1}>`;
-    const lignes = b.split("\n"); let out = "", para = [], liste = [];
+    let out = "", para = [], liste = [];
     const vider = () => { if (para.length) out += `<p>${para.map(inl).join("<br>")}</p>`; if (liste.length) out += "<ul>" + liste.map(x => `<li>${inl(x)}</li>`).join("") + "</ul>"; para = []; liste = []; };
-    for (const x of lignes) {
-      const hh = x.match(/^(#{1,3})\s+(.*)$/);
-      if (hh) { vider(); out += `<h${hh[1].length + 1}>${inl(hh[2])}</h${hh[1].length + 1}>`; }
-      else if (/^\s*- /.test(x)) { if (para.length) { const l = liste; liste = []; vider(); liste = l; } liste.push(x.replace(/^\s*- /, "")); }
-      else { if (liste.length) vider(); para.push(x); }
+    for (const x of b.trim().split("\n")) {
+      if (/^\s*- /.test(x)) { if (para.length) { const l = liste; liste = []; vider(); liste = l; } liste.push(x.replace(/^\s*- /, "")); }
+      else { if (liste.length) vider(); if (x.trim()) para.push(x); }
     }
     vider(); return out;
   }).join("");
 };
 
-const etagesEl = document.getElementById("etages");
-const svg = document.getElementById("liens");
 const curseur = document.getElementById("curseur");
-let limite = livres.length, choisi = null;
-curseur.max = livres.length; curseur.value = livres.length;
+const N = U.evenements.length;
+curseur.max = N; curseur.value = N;
+let limite = N, choix = null;
+
+const visible = o => o && o.ordre < limite;
+const consommateur = (g, t) => { const a = tas[g] && tas[g].consommees[t]; return a && visible(ass[a]) ? a : null; };
 
 function rendre() {
-  const visibles = livres.filter(l => l.ordre < limite);
-  const nb = {}; for (const l of visibles) nb[l.niveau] = (nb[l.niveau] || 0) + 1;
-  const max = Math.max(1, ...Object.keys(nb).map(Number));
-  document.getElementById("compteurs").innerHTML = Object.keys(nb).sort((a, b) => a - b)
-    .map(k => `<span class="compteur">Étage ${k} · <b>${nb[k]}</b></span>`).join("");
-  const dernier = visibles[visibles.length - 1];
-  document.getElementById("date").textContent = dernier ? `${visibles.length} livres · ${dernier.ajoute.replace("T", " ")}` : "aucun livre";
+  const G = U.gisements.filter(visible), T = U.tas.filter(visible), A = U.assemblages.filter(visible);
+  const extraits = new Set(T.map(t => t.gisement));
+  let enStock = 0;
+  const piles = Object.fromEntries(TYPES.map(t => [t, []]));
+  for (const t of T) for (const ty of TYPES) if (!consommateur(t.gisement, ty)) { piles[ty].push(t.gisement); enStock++; }
 
-  let html = "";
-  const prochain = max + 1, besoin = 2 * ((nb[prochain] || 0) + 1), dessous = nb[max] || 0;
-  html += `<div class="etage"><div class="plaque"><div class="num">${prochain}</div><div class="nom">${nomEtage(prochain)}</div></div>
-    <div class="verrou"><div>Verrouillé : il faut ${besoin} livres à l'étage ${max} (il y en a ${dessous}).
-    <div class="jauge"><i style="width:${Math.min(100, 100 * dessous / besoin)}%"></i></div></div></div></div>`;
-  for (let k = max; k >= 1; k--) {
-    const ici = visibles.filter(l => l.niveau === k);
-    const largeur = Math.min(38, 22 + (k - 1) * 4);
-    html += `<div class="etage"><div class="plaque"><div class="num">${k}</div><div class="nom">${nomEtage(k)}</div><div class="nb">${ici.length} livre${ici.length > 1 ? "s" : ""}</div></div><div class="rayon">`;
-    for (const l of ici) {
-      const h = 84 + hash(l.id) % 26;
-      const cls = ["dos", k >= 4 ? "haut" : "", etoiles.has(l.id) ? "etoile" : ""].join(" ");
-      html += `<div class="case"><div class="${cls}" data-id="${l.id}" title="${l.titre.replace(/"/g, "&quot;")}" style="width:${largeur}px;height:${h}px;background:${couleur(l)}"><span>${l.titre}</span></div></div>`;
-    }
-    html += `</div></div>`;
-  }
-  etagesEl.innerHTML = html;
-  etagesEl.querySelectorAll(".dos").forEach(d => d.addEventListener("click", () => choisir(d.dataset.id)));
-  if (choisi && parId[choisi].ordre < limite) surligner(); else { choisi = null; svg.innerHTML = ""; etagesEl.classList.remove("attenue"); }
+  document.getElementById("c-gis").innerHTML = `<b>${G.length}</b>/ ${U.objectif} gisements`;
+  document.getElementById("c-tas").innerHTML = `<b>${enStock}</b>pièces sur les tas`;
+  document.getElementById("c-ass").innerHTML = `<b>${A.length}</b>assemblages`;
+  document.getElementById("t-gis").textContent = `${G.length - extraits.size} vierges · ${extraits.size} extraits`;
+  document.getElementById("t-tas").textContent = `${T.length * TYPES.length} extraites · ${A.length * 3} consommées`;
+  document.getElementById("t-ass").textContent = `${A.length}`;
+  const ev = U.evenements[limite - 1];
+  document.getElementById("date").textContent = ev ? `${limite}/${N} · ${ev.date.replace("T", " ")}` : "rien encore";
+
+  document.getElementById("gisements").innerHTML = G.map(g =>
+    `<div class="gis${extraits.has(g.id) ? " extrait" : ""}" data-k="g:${g.id}" title="${esc(g.titre)}" style="--c:${couleurGis(g)}"></div>`).join("")
+    || `<p class="vide-zone">Aucun gisement découvert.</p>`;
+  document.getElementById("tas").innerHTML = TYPES.map(ty => `<div class="pile" style="--c:var(--${ty})"><h3><i></i>${NOM[ty]}</h3>
+    <div class="nb">${piles[ty].length} en stock</div>
+    <div class="items">${piles[ty].map(g => `<div class="item" data-k="p:${g}:${ty}" title="${esc(gis[g].titre)} — ${NOM[ty].toLowerCase()}"></div>`).join("")}</div></div>`).join("");
+  document.getElementById("produits").innerHTML = A.slice().reverse().map(a => `<div class="produit" data-k="a:${a.id}">
+    <div class="id">${a.id}</div><div class="t">${esc(a.titre)}</div>
+    <div class="pips">${Object.keys(a.recette).map(t => `<i style="--c:var(--${t})" title="${NOM[t]}"></i>`).join("")}</div></div>`).join("")
+    || `<p class="vide-zone">Rien n'a encore été assemblé.</p>`;
+  document.querySelectorAll("main [data-k]").forEach(el => el.addEventListener("click", () => choisir(el.dataset.k)));
+  if (choix) surligner();
 }
 
-function famille(id) {
-  const anc = new Set(), desc = new Set(), aretes = [];
-  const monter = x => (parId[x].parents || []).forEach(p => { if (!parId[p] || parId[p].ordre >= limite) return; aretes.push([x, p]); if (!anc.has(p)) { anc.add(p); monter(p); } });
-  const descendre = x => (parId[x].enfants || []).forEach(e => { if (!parId[e] || parId[e].ordre >= limite) return; aretes.push([e, x]); if (!desc.has(e)) { desc.add(e); descendre(e); } });
-  monter(id); descendre(id);
-  return { lies: new Set([id, ...anc, ...desc]), aretes };
+function liesA(k) {
+  const [genre, id, ty] = k.split(":"); const s = new Set([k]);
+  if (genre === "g") { s.add("g:" + id); TYPES.forEach(t => { s.add(`p:${id}:${t}`); const a = consommateur(id, t); if (a) s.add("a:" + a); }); }
+  if (genre === "p") { s.add("g:" + id); const a = consommateur(id, ty); if (a) s.add("a:" + a); }
+  if (genre === "a") Object.values(ass[id].recette).forEach(g => s.add("g:" + g));
+  return s;
 }
-
 function surligner() {
-  const { lies, aretes } = famille(choisi);
-  etagesEl.classList.add("attenue");
-  etagesEl.querySelectorAll(".dos").forEach(d => { d.classList.toggle("lie", lies.has(d.dataset.id)); d.classList.toggle("choisi", d.dataset.id === choisi); });
-  const base = document.getElementById("batiment").getBoundingClientRect();
-  svg.setAttribute("width", base.width); svg.setAttribute("height", base.height);
-  const centre = (id, bas) => { const el = etagesEl.querySelector(`.dos[data-id="${CSS.escape(id)}"]`); if (!el) return null;
-    const r = el.getBoundingClientRect(); return [r.left - base.left + r.width / 2, (bas ? r.bottom : r.top) - base.top]; };
-  svg.innerHTML = aretes.map(([enfant, parent]) => {
-    const a = centre(enfant, true), b = centre(parent, false); if (!a || !b) return "";
-    const my = (a[1] + b[1]) / 2;
-    return `<path d="M${a[0]} ${a[1]} C${a[0]} ${my} ${b[0]} ${my} ${b[0]} ${b[1]}" fill="none" stroke="#d6a546" stroke-width="1.3" stroke-opacity=".75"/>`;
-  }).join("");
+  const s = liesA(choix);
+  document.querySelector("main").classList.add("attenue");
+  document.querySelectorAll("main > div [data-k]").forEach(el => { el.classList.toggle("lie", s.has(el.dataset.k)); el.classList.toggle("choisi", el.dataset.k === choix); });
 }
 
-function puces(ids) { return `<div class="puces">${ids.filter(i => parId[i]).map(i => `<span class="puce" data-id="${i}">${parId[i].titre}</span>`).join("")}</div>`; }
+const lienGis = g => `<span class="lien" data-k="g:${g}">${esc(gis[g].titre)}</span>`;
+const lienAss = a => `<span class="lien" data-k="a:${a}">${esc(ass[a].titre)}</span>`;
+function lignePiece(g, ty, avecSource) {
+  const a = consommateur(g, ty);
+  return `<div class="ligne-piece${a ? " mangee" : ""}" style="--c:var(--${ty})" data-k="p:${g}:${ty}"><i></i><div>${esc(tas[g].pieces[ty])}
+    <small>${NOM[ty]}${avecSource ? " · de " + esc(gis[g].titre) : ""} · ${a ? "consommée par " + esc(ass[a].titre) : "sur le tas"}</small></div></div>`;
+}
 
-function choisir(id) {
-  choisi = id; const l = parId[id];
-  let h = `<span class="badge">Étage ${l.niveau} · ${nomEtage(l.niveau)}${etoiles.has(id) ? " · ★" : ""}</span><h2>${l.titre}</h2>`;
-  if (l.niveau === 1) {
-    h += `<div class="meta">${(l.auteurs || []).join(", ")} · ${l.annee} · ${(l.genres || []).join(", ")}</div>`;
-    h += `<dl class="pieces">${["monde", "heros", "mecanique", "conflit", "ton"].map(t => `<dt>${t === "heros" ? "héros" : t === "mecanique" ? "mécanique" : t}</dt><dd>${(l.pieces || {})[t] || ""}</dd>`).join("")}</dl>`;
-  } else if (l.niveau === 2) {
-    h += `<div class="meta">Assemblé à partir de : ${Object.entries(l.recette || {}).map(([t, s]) => `${({heros:"héros",mecanique:"mécanique"})[t] || t} de <i>${parId[s] ? parId[s].titre : s}</i>`).join(", ")}</div>`;
+function choisir(k) {
+  choix = k; const [genre, id, ty] = k.split(":"); let h = "";
+  if (genre === "g") {
+    const g = gis[id], extrait = visible(tas[id]);
+    h = `<span class="badge">Gisement · manga réel</span><h2>${esc(g.titre)}</h2>
+      <div class="meta">${esc((g.auteurs || []).join(", "))} · ${g.annee} · ${esc((g.genres || []).join(", "))}</div><div class="texte">${md(g.texte)}</div>`;
+    h += `<h3>Pièces extraites</h3>` + (extrait ? TYPES.map(t => lignePiece(id, t, false)).join("") : `<div class="meta">Gisement encore vierge.</div>`);
+    if (g.sources && g.sources.length) h += `<h3>Sources</h3><div class="meta">${g.sources.map(s => `<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s.replace(/^https?:\/\//, "").slice(0, 50))}</a>`).join("<br>")}</div>`;
+  } else if (genre === "p") {
+    h = `<span class="badge">Pièce brute · ${NOM[ty]}</span><h2>${esc(tas[id].pieces[ty])}</h2>
+      <div class="meta">Extraite du gisement ${lienGis(id)} le ${tas[id].extrait.replace("T", " à ")}.</div>`;
+    const a = consommateur(id, ty);
+    h += a ? `<div class="meta">Consommée par l'assemblage ${lienAss(a)}.</div>` : `<div class="meta">Sur le tas, en attente d'un assembleur.</div>`;
   } else {
-    h += `<div class="meta">Mode : <b>${l.mode}</b> · colonne vertébrale : <i>${parId[l.colonne] ? parId[l.colonne].titre : l.colonne}</i> · ${l.racines.length} mangas réels en ascendance</div>`;
-    if (l.emergence) h += `<div class="emergence">${l.emergence}</div>`;
+    const a = ass[id];
+    h = `<span class="badge">Assemblage · niveau 2 · ${a.id}</span><h2>${esc(a.titre)}</h2>
+      <h3>Pièces consommées</h3>${Object.entries(a.recette).map(([t, g]) => lignePiece(g, t, true)).join("")}
+      <h3>L'œuvre</h3><div class="texte">${md(a.texte)}</div>`;
   }
-  h += `<div class="texte">${md(l.texte || "")}</div>`;
-  if (l.parents && l.parents.length) h += `<h3>${l.niveau === 2 ? "Pièces venues de" : "Parents"}</h3>` + puces(l.parents);
-  const enf = (l.enfants || []).filter(e => parId[e].ordre < limite);
-  if (enf.length) h += `<h3>A engendré</h3>` + puces(enf);
-  if (l.sources && l.sources.length) h += `<h3>Sources</h3><div class="meta">${l.sources.map(s => `<a href="${s}" target="_blank" rel="noopener">${s.replace(/^https?:\/\//, "").slice(0, 48)}</a>`).join("<br>")}</div>`;
   const fiche = document.getElementById("fiche"); fiche.innerHTML = h; fiche.scrollTop = 0;
-  fiche.querySelectorAll(".puce").forEach(p => p.addEventListener("click", () => choisir(p.dataset.id)));
+  fiche.querySelectorAll("[data-k]").forEach(el => el.addEventListener("click", () => choisir(el.dataset.k)));
   surligner();
 }
 
 curseur.addEventListener("input", () => { limite = +curseur.value; rendre(); });
 let minuterie = null;
 document.getElementById("lecture").addEventListener("click", e => {
-  if (minuterie) { clearInterval(minuterie); minuterie = null; e.target.textContent = "▶ Timelapse"; return; }
-  if (limite >= livres.length) limite = 0;
-  e.target.textContent = "❚❚ Pause";
-  const pas = Math.max(1, Math.round(livres.length / 120));
+  const b = e.currentTarget;
+  if (minuterie) { clearInterval(minuterie); minuterie = null; b.textContent = "▶ Timelapse"; return; }
+  if (limite >= N) limite = 0;
+  b.textContent = "❚❚ Pause";
+  const pas = Math.max(1, Math.round(N / 150));
   minuterie = setInterval(() => {
-    limite = Math.min(livres.length, limite + pas); curseur.value = limite; rendre();
-    if (limite >= livres.length) { clearInterval(minuterie); minuterie = null; e.target.textContent = "▶ Timelapse"; }
-  }, 120);
+    limite = Math.min(N, limite + pas); curseur.value = limite; rendre();
+    if (limite >= N) { clearInterval(minuterie); minuterie = null; b.textContent = "▶ Timelapse"; }
+  }, 110);
 });
-document.getElementById("btn-bible").addEventListener("click", () => document.getElementById("bible").classList.toggle("ouvert"));
-document.getElementById("bible-page").innerHTML = md(B.bible);
-document.getElementById("pied").textContent = `Généré le ${B.genere.replace("T", " ")} · ${Object.keys(B.modes).length} modes de fusion`;
-window.addEventListener("resize", () => { if (choisi) surligner(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { choix = null; document.querySelector("main").classList.remove("attenue"); document.querySelectorAll(".choisi").forEach(x => x.classList.remove("choisi")); } });
+document.getElementById("pied").textContent = `Généré le ${U.genere.replace("T", " ")} · Échap pour tout désélectionner`;
 rendre();
 </script>
 </body>

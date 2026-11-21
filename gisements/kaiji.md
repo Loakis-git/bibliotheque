@@ -1,16 +1,9 @@
 ---
 id: kaiji
-niveau: 1
 titre: Kaiji
 auteurs: [Nobuyuki Fukumoto]
 annee: 1996
 genres: [jeu, thriller, psychologique]
-pieces:
-  monde: Une société de la dette, où les puissants achètent la vie des pauvres.
-  heros: Un perdant qui ne se réveille que dos au mur.
-  mecanique: Des paris psychologiques à enjeux extrêmes, gagnés par la lecture des autres.
-  conflit: Les endettés contre ceux qui organisent leur chute pour s'en divertir.
-  ton: Sueur froide, tension, désespoir et éclairs de génie.
 sources: []
 generation: 0
 ajoute: 2026-11-21T11:30

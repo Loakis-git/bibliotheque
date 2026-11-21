@@ -1,16 +1,9 @@
 ---
 id: dr-stone
-niveau: 1
 titre: Dr. Stone
 auteurs: [Riichiro Inagaki, Boichi]
 annee: 2017
 genres: [aventure, science-fiction, post-apocalyptique]
-pieces:
-  monde: Une civilisation effacée, dont il ne reste que la nature et des ruines.
-  heros: Un scientifique optimiste qui croit que tout peut être reconstruit.
-  mecanique: Une progression technologique pas à pas, chaque invention ouvrant la suivante.
-  conflit: Le savoir et la coopération contre la force brute.
-  ton: Énergique, enthousiaste, pédagogique.
 sources: []
 generation: 0
 ajoute: 2026-11-21T11:30
