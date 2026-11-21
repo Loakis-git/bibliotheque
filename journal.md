@@ -10,3 +10,6 @@ Une ligne par passage : `- date · action · id · titre`.
 - 2026-11-21 12:24 · assembler · n2-0005 · Le Maître d'armes des îles
 - 2026-11-21 12:28 · assembler · n2-0006 · Mille victoires
 - 2026-11-21 20:35 · assembler · n2-0007 · Mille ans de répétitions
+- 2026-11-21 22:15 · assembler · n2-0008 · La Course aux rumeurs
+- 2026-11-21 22:19 · assembler · n2-0009 · Les Rats du Mur
+- 2026-11-21 22:23 · assembler · n2-0010 · Le Passeur de Zélande
